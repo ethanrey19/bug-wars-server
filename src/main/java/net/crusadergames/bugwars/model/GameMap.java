@@ -19,13 +19,16 @@ public class GameMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @NotBlank
     @Size(max = 25)
     @Column(unique = true)
     private String name;
 
+
     @NotNull
     private Long height;
+
 
     @NotNull
     private Long width;
