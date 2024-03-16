@@ -9,11 +9,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "game_maps")
+@Table(name = "entities")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameMap {
+public class MapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +25,8 @@ public class GameMap {
     private String name;
 
     @NotNull
-    private int height;
-
-    @NotNull
-    private int width;
-
-    @NotBlank
-    @Column(columnDefinition = "TEXT")
-    private String body;
+    @Column(name = "code")
+    private Long entityCode;
 
     @NotBlank
     @Column(name = "image")

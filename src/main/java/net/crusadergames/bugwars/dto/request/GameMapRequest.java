@@ -13,10 +13,12 @@ public class GameMapRequest {
     @Size(max = 25)
     private String name;
 
-    private Long height;
+    private int height;
 
-    private Long width;
+    private int width;
 
     private String body;
+
+    private String imagePath;
 
 }

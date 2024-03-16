@@ -1,30 +1,24 @@
-DROP TABLE IF EXISTS terrain;
-DROP TABLE IF EXISTS entities;
-DROP TABLE IF EXISTS game_maps;
-
 CREATE TABLE IF NOT EXISTS terrain (
-    id serial,
+    id bigint,
     name character varying(255),
-    image character varying(255),
-    CONSTRAINT PK_terrain PRIMARY KEY (id)
+    image character varying(255)
 );
 
 CREATE TABLE IF NOT EXISTS entities (
-    id serial,
+    id bigint,
     name character varying(255),
     code character,
-    image character varying(255),
-    CONSTRAINT PK_entities PRIMARY KEY (id)
+    image character varying(255)
 );
 
 CREATE TABLE IF NOT EXISTS game_maps (
-    id serial,
+    id bigint,
     name character varying(255),
-    terrain_id int,
+    terrain_id bigint,
+    height int,
+    width int,
     body text,
-    image character varying(255),
-    CONSTRAINT PK_game_maps PRIMARY KEY (id),
-    CONSTRAINT FK_terrain FOREIGN KEY (terrain_id) REFERENCES terrain(id)
+    image character varying(255)
 );
 
 CREATE TABLE IF NOT EXISTS sample_string (
@@ -127,4 +121,16 @@ VALUES
 ('Guest Script B','LEFT','2024-01-28','2024-01-28',(SELECT id FROM users WHERE username = 'guest_user')),
 ('Guest Script C','RIGHT','2024-01-28','2024-01-28',(SELECT id FROM users WHERE username = 'guest_user')),
 ('Guest Script D','EAT','2024-01-28','2024-01-28',(SELECT id FROM users WHERE username = 'guest_user'));
+
+INSERT INTO terrain (name, image)
+VALUES
+('Grass', 'src/assets/terrain/grass.png'),
+('Wall', 'src/assets/terrain/wall.png');
+
+INSERT INTO game_maps (name, height, width, body, image)
+VALUES
+('Simple Grass Map', 11, 11,
+'XXXXXXXXXXX\nX000010000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nXXXXXXXXXXX\n',
+'src/assets/images/map-0.png');
+
 

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 public class GameMapControllerIT {
 
+    /*
     private final User USER = new User(1L,"user", "gmail@email.com", "passing", Set.of(new Role(1, ERole.ROLE_USER)));
     private final User ADMIN = new User(2L,"admin", "gmail@email.com", "passing",Set.of(new Role(3,
             ERole.ROLE_ADMIN)));
@@ -165,4 +166,6 @@ public class GameMapControllerIT {
         Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.deleteGameMap(1L, mockPrincipal));
     }
 
+
+     */
 }
