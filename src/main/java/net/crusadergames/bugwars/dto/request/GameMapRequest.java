@@ -13,8 +13,6 @@ public class GameMapRequest {
     @Size(max = 25)
     private String name;
 
-    private Long terrainId;
-
     private int height;
 
     private int width;

@@ -29,8 +29,8 @@ public class GameMapController {
         return gameMapService.getGameMapById(gameMapId);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<GameMap> postGameMap(@RequestBody GameMapRequest gameMapRequest) throws Exception{
         GameMap gameMap = gameMapService.createNewGameMap(gameMapRequest);
         return new ResponseEntity<>(gameMap, HttpStatus.CREATED);
