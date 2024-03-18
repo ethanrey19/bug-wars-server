@@ -2,6 +2,7 @@ package net.crusadergames.bugwars.service;
 
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.exceptions.*;
+import net.crusadergames.bugwars.exceptions.parser.SyntaxException;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
@@ -23,8 +24,8 @@ public class ScriptService {
     @Autowired
     ScriptRepository scriptRepository;
 
-//    @Autowired
-//    ParserUtil parser;
+    @Autowired
+    ParserService parserService;
 
     @Autowired
     UserRepository userRepository;
@@ -35,11 +36,15 @@ public class ScriptService {
     }
 
     public Script createNewScript(Principal principal, ScriptRequest scriptRequest) {
-        // parser.CheckScription(scriptRequest);
-            // True or "Correct"
-                // continue
-            // False or "Invalid"
-                // Stop and throw Error
+        List<Integer> bytecode;
+        try{
+             bytecode = parserService.returnByteCode(scriptRequest.getBody());
+             System.out.println(bytecode);
+        }catch(SyntaxException syntaxException){
+            throw new SyntaxException("");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (scriptRequest.getName().isBlank() || scriptRequest.getBody().isBlank()) {
             throw new ScriptSaveException();
         }

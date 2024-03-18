@@ -41,6 +41,10 @@ public class Script {
     @Column(name = "date_updated")
     private LocalDate dateUpdated;
 
+//    @NotBlank
+//    @Column(name = "bytecode")
+//    private List<Integer> bytecode
+
     @ToString.Exclude
     @ManyToOne
     @JsonIgnore

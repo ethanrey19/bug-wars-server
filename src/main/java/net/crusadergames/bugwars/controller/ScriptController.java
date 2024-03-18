@@ -21,16 +21,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScriptController {
 
-
     private final ScriptService scriptService;
-
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public ResponseEntity<Script> postScript(@RequestBody ScriptRequest scriptRequest, Principal principal) {
         Script script = scriptService.createNewScript(principal, scriptRequest);
-
-
 
         return new ResponseEntity<>(script, HttpStatus.CREATED);
     }

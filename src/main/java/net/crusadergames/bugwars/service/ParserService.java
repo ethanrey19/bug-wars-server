@@ -42,6 +42,8 @@ public class ParserService {
                 lineNumber++;
             } else if (currentToken.getTokenType().equals(TokenTypes.INVALID_TOKEN)) {
                 throw new SyntaxException("Invalid syntax: " + currentToken.getValue() + " at line " + lineNumber);
+            }else{
+                currentToken = tokenizer.getNextToken();
             }
         }
 
