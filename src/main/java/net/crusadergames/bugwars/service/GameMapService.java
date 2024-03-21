@@ -51,7 +51,7 @@ public class GameMapService {
 
         mapNameAlreadyExists(gameMapRequest.getName());
 
-        GameMap gameMap = new GameMap(null, gameMapRequest.getName(), gameMapRequest.getTerrainId(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
+        GameMap gameMap = new GameMap(null, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
         gameMap = gameMapRepository.save(gameMap);
         return gameMap;
     }
@@ -64,7 +64,7 @@ public class GameMapService {
 
         mapNameAlreadyExists(gameMapRequest.getName());
 
-        GameMap newGameMap = new GameMap(gameMapId, gameMapRequest.getName(), gameMapRequest.getTerrainId(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
+        GameMap newGameMap = new GameMap(gameMapId, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
         gameMapRepository.save(newGameMap);
 
         return newGameMap;

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS terrain (
 CREATE TABLE IF NOT EXISTS entities (
     id bigint,
     name character varying(255),
-    code character varying(1),
+    code character,
     image character varying(255)
 );
 
@@ -124,18 +124,18 @@ VALUES
 
 INSERT INTO terrain (name, image)
 VALUES
-('Grass', 'Grass Image Placeholder'),
-('Dirt', 'Dirt Image Placeholder'),
-('Stone', 'Stone Image Placeholder');
+('Grass', 'src/assets/terrain/grass.png'),
+('Wall', 'src/assets/terrain/wall.png');
 
 INSERT INTO entities (name, code, image)
 VALUES
-('Player 1', '1', 'Bug 1 Image Placeholder'),
-('Player 2', '2', 'Bug 2 Image Placeholder'),
-('Fruit', 'F', 'Fruit Image Placeholder');
+('Player 1', '1', 'Bug 1 Placeholder'),
+('Player 2', '2', 'Bug 2 Placeholder'),
+('Fruit', 'F', 'Fruit Placeholder');
 
-INSERT INTO game_maps (name, terrain_id, height, width, body, image)
+INSERT INTO game_maps (name, height, width, body, image)
 VALUES
-('Simple Grass Map', (SELECT id FROM terrain WHERE name = 'Stone'), 11, 11,
+('Simple Grass Map', 11, 11,
 'XXXXXXXXXXX\nX000010000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nXXXXXXXXXXX\n',
-'Grass Map Image Placeholder');
+'src/assets/images/map-0.png');
+
