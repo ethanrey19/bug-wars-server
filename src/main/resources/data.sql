@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS terrain (
 CREATE TABLE IF NOT EXISTS entities (
     id bigint,
     name character varying(255),
-    code character,
+    code character varying(1),
     image character varying(255)
 );
 
@@ -127,6 +127,12 @@ VALUES
 ('Grass', 'Grass Image Placeholder'),
 ('Dirt', 'Dirt Image Placeholder'),
 ('Stone', 'Stone Image Placeholder');
+
+INSERT INTO entities (name, code, image)
+VALUES
+('Player 1', '1', 'Bug 1 Image Placeholder'),
+('Player 2', '2', 'Bug 2 Image Placeholder'),
+('Fruit', 'F', 'Fruit Image Placeholder');
 
 INSERT INTO game_maps (name, terrain_id, height, width, body, image)
 VALUES
