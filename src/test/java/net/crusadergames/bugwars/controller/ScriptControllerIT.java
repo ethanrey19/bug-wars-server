@@ -55,7 +55,6 @@ public class ScriptControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Principal mockPrincipal;
     private final User USER = new User(1L,"jeff", "gmail@email.com", "passing");
     private final User USER_2 = new User(2L,"mac", "gmail@email.com", "passing");
 
@@ -64,21 +63,10 @@ public class ScriptControllerIT {
         SampleString string = SampleString.builder().content("polar bear").build();
         when(scriptService.createNewScript(any(), any())).thenThrow(new ScriptSaveException());
 
-        mockMvc.perform(post("/api/scripts")
+        mockMvc.perform(post("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(string)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void postScript_ReturnUserNotFoundException() throws Exception {
-        SampleString string = SampleString.builder().content("polar bear").build();
-        when(scriptService.createNewScript(any(), any())).thenThrow(new UserNotFoundException());
-
-        mockMvc.perform(post("/api/scripts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(string)))
-                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -86,7 +74,7 @@ public class ScriptControllerIT {
         SampleString string = SampleString.builder().content("polar bear").build();
         when(scriptService.createNewScript(any(), any())).thenThrow(new ScriptNameAlreadyExistsException());
 
-        mockMvc.perform(post("/api/scripts")
+        mockMvc.perform(post("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(string)))
                 .andExpect(status().isConflict());
@@ -96,9 +84,9 @@ public class ScriptControllerIT {
     public void postScript_ReturnResponseIfValidRequest() throws Exception {
         ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
         Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        when(scriptService.createNewScript(mockPrincipal, request)).thenReturn(scriptRes);
+        when(scriptService.createNewScript(1L, request)).thenReturn(scriptRes);
 
-        ResultActions response = mockMvc.perform(post("/api/scripts")
+        ResultActions response = mockMvc.perform(post("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .characterEncoding("utf-8")
@@ -110,7 +98,7 @@ public class ScriptControllerIT {
 
     @Test
     public void deleteScript_ReturnScriptDeletedIfSuccess() throws Exception {
-        when(scriptService.deleteScriptById(any(), any())).thenReturn("Script Deleted");
+        when(scriptService.deleteScriptById(any())).thenReturn("Script Deleted");
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/scripts/{id}", 1)
@@ -122,43 +110,10 @@ public class ScriptControllerIT {
 
     @Test
     public void deleteScript_ReturnScriptNotFoundException() throws Exception {
-        when(scriptService.deleteScriptById(any(), any())).thenThrow(new ScriptNotFoundException());
+        when(scriptService.deleteScriptById(any())).thenThrow(new ScriptNotFoundException());
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/scripts/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void deleteScript_ReturnUserNotFoundException() throws Exception {
-        when(scriptService.deleteScriptById(any(), any())).thenThrow(new UserNotFoundException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/scripts/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void deleteScript_ReturnScriptDoesNotBelongToUserException() throws Exception {
-        when(scriptService.deleteScriptById(any(), any())).thenThrow(new ScriptDoesNotBelongToUserException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/scripts/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void getUserScript_ReturnUserNotFoundException() throws Exception {
-        when(scriptService.getScript(any(), any())).thenThrow(new UserNotFoundException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/scripts/{id}", 2)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -166,7 +121,7 @@ public class ScriptControllerIT {
 
     @Test
     public void getUserScript_ReturnScriptNotFoundException() throws Exception {
-        when(scriptService.getScript(any(), any())).thenThrow(new ScriptNotFoundException());
+        when(scriptService.getScript(any())).thenThrow(new ScriptNotFoundException());
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/scripts/{id}", 2)
@@ -176,20 +131,9 @@ public class ScriptControllerIT {
     }
 
     @Test
-    public void getUserScript_ScriptDoesNotBelongToUserException() throws Exception {
-        when(scriptService.getScript(any(), any())).thenThrow(new ScriptDoesNotBelongToUserException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/scripts/{id}", 2)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void getUserScript_ReturnScriptIfSuccess() throws Exception {
         Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        when(scriptService.getScript(1L, mockPrincipal)).thenReturn(scriptRes);
+        when(scriptService.getScript(1L)).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/scripts/{id}", 1)
@@ -202,15 +146,15 @@ public class ScriptControllerIT {
     @Test
     public void getAllUserScripts_ReturnScriptsIfSuccess() throws Exception {
         Script script1 = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        Script script2 = new Script(2L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER_2);
+        Script script2 = new Script(2L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         List<Script> expectedScript = new ArrayList<>();
         expectedScript.add(script1);
         expectedScript.add(script2);
 
-        when(scriptService.getAllScriptsByUser(mockPrincipal)).thenReturn(expectedScript);
+        when(scriptService.getAllScriptsByUser(1L)).thenReturn(expectedScript);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/scripts")
+                .get("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -218,21 +162,10 @@ public class ScriptControllerIT {
     }
 
     @Test
-    public void getAllUserScripts_ReturnUserNotFoundException() throws Exception {
-        when(scriptService.getAllScriptsByUser(mockPrincipal)).thenThrow(new UserNotFoundException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/scripts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     public void updateScript_ReturnResponseIfValidRequest() throws Exception {
         ScriptRequest request = new ScriptRequest("Updated Script", "I am a Script");
         Script scriptRes = new Script(1L, "Updated Script", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        when(scriptService.updateOldScript(mockPrincipal, request, 1L)).thenReturn(scriptRes);
+        when(scriptService.updateOldScript(request, 1L)).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .put("/api/scripts/{scriptId}", "1")
@@ -245,7 +178,7 @@ public class ScriptControllerIT {
     @Test
     public void updateScript_ReturnScriptNotFoundException() throws Exception {
         ScriptRequest request = new ScriptRequest("Updated Script", "I am a Script");
-        when(scriptService.updateOldScript(any(), any(), any())).thenThrow(new ScriptNotFoundException());
+        when(scriptService.updateOldScript(any(), any())).thenThrow(new ScriptNotFoundException());
 
         mockMvc.perform(MockMvcRequestBuilders
                 .put("/api/scripts/{id}", 2)
@@ -254,31 +187,4 @@ public class ScriptControllerIT {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
-
-    @Test
-    public void updateScript_ReturnUserNotFoundException() throws Exception {
-        ScriptRequest request = new ScriptRequest("Updated Script", "I am a Script");
-        when(scriptService.updateOldScript(any(), any(), any())).thenThrow(new UserNotFoundException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .put("/api/scripts/{id}", 2)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void updateScript_ScriptDoesNotBelongToUserException() throws Exception {
-        ScriptRequest request = new ScriptRequest("Updated Script", "I am a Script");
-        when(scriptService.updateOldScript(any(), any(), any())).thenThrow(new ScriptDoesNotBelongToUserException());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .put("/api/scripts/{id}", 2)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
 }

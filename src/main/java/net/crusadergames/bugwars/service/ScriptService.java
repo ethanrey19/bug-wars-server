@@ -103,9 +103,4 @@ public class ScriptService {
         }
     }
 
-    private void throwScriptDoesNotBelongToUser(User currentUser, User scriptUser) {
-        if (!currentUser.getId().equals(scriptUser.getId())) {
-            throw new ScriptDoesNotBelongToUserException();
-        }
-    }
 }
