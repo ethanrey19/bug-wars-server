@@ -35,25 +35,23 @@ public class ScriptServiceTest {
     private ScriptService scriptService;
     private ScriptRepository scriptRepository;
     private UserRepository userRepository;
-    private Principal mockPrincipal;
 
     @BeforeEach
     public void beforeEachTest(){
         userRepository = Mockito.mock(UserRepository.class);
         scriptRepository = Mockito.mock(ScriptRepository.class);
-        mockPrincipal = Mockito.mock(Principal.class);
         scriptService = new ScriptService(scriptRepository,userRepository);
     }
 
     @Test
     public void createNewScript_shouldReturnCreatedScript()  {
         ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-        when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER));
         when(scriptRepository.findScriptByName(any())).thenReturn(Optional.empty());
         when(userRepository.save(Mockito.any(User.class))).thenReturn(USER);
         when(scriptRepository.save(Mockito.any(Script.class))).thenReturn(SCRIPT_1);
 
-        Script createdScript = scriptService.createNewScript(mockPrincipal,request);
+        Script createdScript = scriptService.createNewScript(1L, request);
 
         Assert.assertNotNull (createdScript);
         Assert.assertEquals(createdScript.getScriptId(),SCRIPT_1.getScriptId());
@@ -67,7 +65,7 @@ public class ScriptServiceTest {
             when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
             when(scriptRepository.findScriptByName(any())).thenReturn(Optional.of(SCRIPT_1));
 
-            scriptService.createNewScript(mockPrincipal,request);
+            scriptService.createNewScript(1L,request);
         });
     }
 
@@ -75,43 +73,20 @@ public class ScriptServiceTest {
     public void createNewScript_shouldThrowScriptSaveErrorWhenTitleIsNull()  {
         Assert.assertThrows(ScriptSaveException.class, () ->{
             ScriptRequest request = new ScriptRequest("", "I am a script");
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_FAKE));
+            when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER_FAKE));
             when(scriptRepository.findScriptByName(any())).thenReturn(Optional.empty());
             when(userRepository.save(Mockito.any(User.class))).thenReturn(USER);
 
-            scriptService.createNewScript(mockPrincipal,request);
-        });
-    }
-
-    @Test
-    public void createNewScript_shouldThrowUserNotFoundException() {
-        Assert.assertThrows(UserNotFoundException.class, () ->{
-            ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-            when(userRepository.findByUsername("Mac")).thenReturn(Optional.empty());
-
-            scriptService.createNewScript(mockPrincipal,request);
-        });
-    }
-
-    @Test
-    public void createNewScript_shouldThrowScriptSaveException()  {
-        Assert.assertThrows(ScriptSaveException.class, () ->{
-            ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
-            when(scriptRepository.findScriptByName(any())).thenReturn(Optional.empty());
-
-            when(scriptRepository.save(any())).thenThrow(new ScriptSaveException());
-
-            scriptService.createNewScript(mockPrincipal,request);
+            scriptService.createNewScript(1L,request);
         });
     }
 
     @Test
     void deleteScriptById_shouldDeleteScriptById() {
-        when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER));
         when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
 
-        scriptService.deleteScriptById(1L, mockPrincipal);
+        scriptService.deleteScriptById(1L);
 
         verify(scriptRepository, times(1)).deleteById(1L);
 
@@ -122,36 +97,16 @@ public class ScriptServiceTest {
         Assert.assertThrows(ScriptNotFoundException.class, () ->{
             when(scriptRepository.findById(any())).thenReturn(Optional.empty());
 
-            scriptService.deleteScriptById(1L, mockPrincipal);
-        });
-    }
-
-    @Test
-    void deleteScriptById_shouldThrowUserNotFoundException() {
-        Assert.assertThrows(UserNotFoundException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            scriptService.deleteScriptById(1L, mockPrincipal);
-        });
-    }
-
-    @Test
-    void deleteScriptById_shouldThrowScriptDoesNotBelongException() {
-        Assert.assertThrows(ScriptDoesNotBelongToUserException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            scriptService.deleteScriptById(1L, mockPrincipal);
+            scriptService.deleteScriptById(1L);
         });
     }
 
     @Test
     void getScript_shouldReturnCorrectScript() {
-        when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER));
         when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
 
-        Script script = scriptService.getScript(1L, mockPrincipal);
+        Script script = scriptService.getScript(1L);
 
         Assert.assertNotNull (SCRIPT_1);
         Assert.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
@@ -159,49 +114,29 @@ public class ScriptServiceTest {
     }
 
     @Test
-    void getScript_shouldThrowScriptDoesNotBelongException() {
-        Assert.assertThrows(ScriptDoesNotBelongToUserException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            scriptService.getScript(1L, mockPrincipal);
-        });
-    }
-
-    @Test
-    void getScript_shouldThrowUserNotFoundException() {
-        Assert.assertThrows(UserNotFoundException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            scriptService.getScript(1L, mockPrincipal);
-        });
-    }
-
-    @Test
     void getScript_shouldThrowScriptNotFoundException() {
         Assert.assertThrows(ScriptNotFoundException.class, () ->{
             when(scriptRepository.findById(any())).thenReturn(Optional.empty());
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
+            when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER_2));
 
-            scriptService.getScript(1L, mockPrincipal);
+            scriptService.getScript(1L);
         });
     }
 
     @Test
     void updateOldScript_shouldReturnNewScript() {
-        when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_NEW));
-        when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_Old));
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER));
+        when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
 
-        ScriptRequest requestOld = new ScriptRequest("Old Script", "Old Food!");
-        ScriptRequest requestNew = new ScriptRequest("andrew", "Updated Script");
-        scriptService.createNewScript(mockPrincipal, requestOld);
+        ScriptRequest requestOld = new ScriptRequest("andrew", "Updated Script");
+        ScriptRequest requestNew = new ScriptRequest("First Script", "I am a script");
+        scriptService.createNewScript(1L, requestOld);
 
-        Script script = scriptService.updateOldScript(mockPrincipal, requestNew, 1L);
+        Script script = scriptService.updateOldScript(requestNew, 1L);
 
         Assert.assertNotNull (script);
-        Assert.assertEquals(script.getScriptId(), SCRIPT_NEW.getScriptId());
-        Assert.assertEquals(script, SCRIPT_NEW);
+        Assert.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
+        Assert.assertEquals(script, SCRIPT_1);
     }
 
     @Test
@@ -211,45 +146,22 @@ public class ScriptServiceTest {
             when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
 
             ScriptRequest requestNew = new ScriptRequest("andrew", "Updated Script");
-            scriptService.updateOldScript(mockPrincipal, requestNew, 1L);
-        });
-    }
-
-    @Test
-    void updateOldScript_shouldThrowUserNotFoundException() {
-        Assert.assertThrows(UserNotFoundException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            ScriptRequest requestNew = new ScriptRequest("andrew", "Updated Script");
-            scriptService.updateOldScript(mockPrincipal, requestNew, 1L);
-        });
-    }
-
-    @Test
-    void updateOldScript_shouldThrowScriptDoesNotBelongException() {
-        Assert.assertThrows(ScriptDoesNotBelongToUserException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
-            when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
-
-            ScriptRequest requestNew = new ScriptRequest("andrew", "Updated Script");
-            scriptService.updateOldScript(mockPrincipal, requestNew, 1L);
+            scriptService.updateOldScript(requestNew, 1L);
         });
     }
 
     @Test
     void getAllScriptsByUser_shouldReturnListOfScriptsUnderAUser() {
-        Script script1 = new Script(1L, "Script 1", "Script 1", LocalDate.now(),LocalDate.now(), USER_NEW);
-        Script script2 = new Script(2L, "Script 2", "Script 2", LocalDate.now(),LocalDate.now(), USER_NEW);
+        Script script1 = new Script(1L, "Script 1", "Script 1", LocalDate.now(),LocalDate.now(), USER);
+        Script script2 = new Script(2L, "Script 2", "Script 2", LocalDate.now(),LocalDate.now(), USER);
 
         List<Script> expected = new ArrayList<>();
         expected.add(script1);
         expected.add(script2);
-        when(mockPrincipal.getName()).thenReturn("andrew");
-        when(userRepository.findByUsername("andrew")).thenReturn(Optional.of(USER_NEW));
-        when(scriptRepository.findScriptsByUser(USER_NEW)).thenReturn(expected);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(USER));
+        when(scriptRepository.findScriptsByUser(USER)).thenReturn(expected);
 
-        List<Script> script = scriptService.getAllScriptsByUser(mockPrincipal);
+        List<Script> script = scriptService.getAllScriptsByUser(1L);
 
         Assert.assertEquals(expected, script);
     }
@@ -257,10 +169,10 @@ public class ScriptServiceTest {
     @Test
     void getAllScriptsByUser_shouldThrowUserNotFoundException() {
         Assert.assertThrows(UserNotFoundException.class, () ->{
-            when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+            when(userRepository.findById(any())).thenReturn(Optional.empty());
             when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
 
-            scriptService.getAllScriptsByUser(mockPrincipal);
+            scriptService.getAllScriptsByUser(1L);
         });
     }
 

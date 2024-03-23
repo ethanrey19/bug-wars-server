@@ -127,6 +127,12 @@ VALUES
 ('Grass', 'src/assets/terrain/grass.png'),
 ('Wall', 'src/assets/terrain/wall.png');
 
+INSERT INTO entities (name, code, image)
+VALUES
+('Player 1', '1', 'Bug 1 Image Placeholder'),
+('Player 2', '2', 'Bug 2 Image Placeholder'),
+('Fruit', 'F', 'Fruit Image Placeholder');
+
 INSERT INTO game_maps (name, height, width, body, image)
 VALUES
 ('Simple Grass Map', 11, 11,
