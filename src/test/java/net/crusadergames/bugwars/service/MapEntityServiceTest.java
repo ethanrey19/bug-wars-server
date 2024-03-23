@@ -1,14 +1,10 @@
 package net.crusadergames.bugwars.service;
 
-import jakarta.persistence.Entity;
 import net.crusadergames.bugwars.dto.request.MapEntityRequest;
-import net.crusadergames.bugwars.dto.request.TerrainRequest;
 import net.crusadergames.bugwars.exceptions.NameAlreadyExistsException;
 import net.crusadergames.bugwars.exceptions.NameBlankException;
 import net.crusadergames.bugwars.model.MapEntity;
-import net.crusadergames.bugwars.model.Terrain;
 import net.crusadergames.bugwars.repository.MapEntityRepository;
-import net.crusadergames.bugwars.repository.TerrainRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
