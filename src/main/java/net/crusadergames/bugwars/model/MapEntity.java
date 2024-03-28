@@ -24,9 +24,8 @@ public class MapEntity {
     @Column(unique = true)
     private String name;
 
-    @NotNull
     @Column(name = "code")
-    private Long entityCode;
+    private String entityCode;
 
     @NotBlank
     @Column(name = "image")

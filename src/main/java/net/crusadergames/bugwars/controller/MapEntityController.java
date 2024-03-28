@@ -1,0 +1,49 @@
+package net.crusadergames.bugwars.controller;
+
+import lombok.RequiredArgsConstructor;
+import net.crusadergames.bugwars.dto.request.MapEntityRequest;
+import net.crusadergames.bugwars.model.MapEntity;
+import net.crusadergames.bugwars.service.MapEntityService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/api/entity")
+@RequiredArgsConstructor
+public class MapEntityController {
+
+    private final MapEntityService mapEntityService;
+
+    @GetMapping
+    public List<MapEntity> getAllEntities() {
+        return mapEntityService.getAllEntities();
+    }
+
+    @GetMapping("/{entityId}")
+    public MapEntity getEntityById(@PathVariable Long entityId) throws Exception {
+        return mapEntityService.getEntityById(entityId);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public ResponseEntity<MapEntity> postEntity(@RequestBody MapEntityRequest mapEntityRequest) throws Exception {
+        MapEntity mapEntity = mapEntityService.createNewEntity(mapEntityRequest);
+        return new ResponseEntity<>(mapEntity, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{entityId}")
+    public ResponseEntity<MapEntity> updateEntity(@PathVariable Long entityId, @RequestBody MapEntityRequest mapEntityRequest) throws Exception {
+        MapEntity mapEntity = mapEntityService.updateEntity(entityId, mapEntityRequest);
+        return new ResponseEntity<>(mapEntity, HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{entityId}")
+    public ResponseEntity<String> deleteEntity(@PathVariable Long entityId) throws Exception {
+        String response = mapEntityService.deleteEntityById(entityId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+}
