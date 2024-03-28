@@ -125,6 +125,21 @@ public class ScriptService {
         return scriptRepository.findScriptsByUser(user);
     }
 
+    public Script getScriptByName(String scriptName, Principal principal) {
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
+        Optional<Script> optionalScript = scriptRepository.findScriptByName(scriptName);
+
+        throwUserNotFound(optionalUser);
+        throwScriptNotPresent(optionalScript);
+
+        User user = optionalUser.get();
+        Script script = optionalScript.get();
+
+        throwScriptDoesNotBelongToUser(user, script.getUser());
+
+        return script;
+    }
+
     private void throwUserNotFound(Optional<User> user) {
         if (user.isEmpty()) {
             throw new UserNotFoundException();

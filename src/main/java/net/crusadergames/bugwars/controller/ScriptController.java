@@ -55,6 +55,13 @@ public class ScriptController {
         return scriptService.getAllScriptsByUser(principal);
     }
 
+    @GetMapping("/name/{scriptName}")
+    public ResponseEntity<Script> getScriptByName(@PathVariable String scriptName, Principal principal){
+        Script script = scriptService.getScriptByName(scriptName, principal);
+
+        return new ResponseEntity<>(script, HttpStatus.OK);
+    }
+
     @PutMapping("/{scriptId}")
     public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, Principal principal, @PathVariable Long scriptId) {
         Script script = scriptService.updateOldScript(principal, scriptRequest, scriptId);
