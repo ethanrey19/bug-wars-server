@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.naming.NameNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TerrainService {
@@ -26,7 +27,7 @@ public class TerrainService {
         return terrainList;
     }
 
-    public Terrain getTerrainById(Long terrainId) throws Exception {
+    public Terrain getTerrainById(UUID terrainId) throws Exception {
         Optional<Terrain> optionalTerrain = terrainRepository.findById(terrainId);
         throwTerrainNotFound(optionalTerrain);
         Terrain terrain = optionalTerrain.get();
@@ -43,7 +44,7 @@ public class TerrainService {
         return terrain;
     }
 
-    public Terrain updateTerrain(Long terrainId, TerrainRequest terrainRequest) throws Exception {
+    public Terrain updateTerrain(UUID terrainId, TerrainRequest terrainRequest) throws Exception {
         throwTerrainNameBlank(terrainRequest);
 
         Optional<Terrain> optionalTerrain = terrainRepository.findById(terrainId);
@@ -57,7 +58,7 @@ public class TerrainService {
         return newTerrain;
     }
 
-    public String deleteTerrainById(Long terrainId) throws Exception {
+    public String deleteTerrainById(UUID terrainId) throws Exception {
         Optional<Terrain> optionalTerrain = terrainRepository.findById(terrainId);
         throwTerrainNotFound(optionalTerrain);
 

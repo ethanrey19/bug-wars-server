@@ -1,5 +1,6 @@
 package net.crusadergames.bugwars.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.model.Script;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -26,46 +28,41 @@ public class ScriptController {
 
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/user-scripts/{userId}")
-    public ResponseEntity<Script> postScript(@RequestBody ScriptRequest scriptRequest, @PathVariable Long userId) {
-        Script script = scriptService.createNewScript(userId, scriptRequest);
-
-
+    @PostMapping("")
+    public ResponseEntity<Script> createScript(@Valid @RequestBody ScriptRequest scriptRequest, Principal principal) {
+        Script script = scriptService.createScript(scriptRequest, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{scriptId}")
-    public ResponseEntity<String> deleteScript(@PathVariable Long scriptId) {
-        String response = scriptService.deleteScriptById(scriptId);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
-    }
-
     @GetMapping("/{scriptId}")
-    public ResponseEntity<Script> getUserScript(@PathVariable Long scriptId) {
-        Script script = scriptService.getScript(scriptId);
+    public ResponseEntity<Script> getScriptById(@PathVariable UUID scriptId, Principal principal) {
+        Script script = scriptService.getScriptById(scriptId, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.OK);
     }
 
-    @GetMapping("/user-scripts/{userId}")
-    public List<Script> getAllScriptsByUser(@PathVariable Long userId) {
-        return scriptService.getAllScriptsByUser(userId);
+    @GetMapping("/all")
+    public List<Script> getAllScriptsByUser(Principal principal) {
+        return scriptService.getAllScriptsByUser(principal.getName());
     }
 
     @GetMapping("/name/{scriptName}")
     public ResponseEntity<Script> getScriptByName(@PathVariable String scriptName, Principal principal){
-        Script script = scriptService.getScriptByName(scriptName, principal);
+        Script script = scriptService.getScriptByName(scriptName, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.OK);
     }
 
     @PutMapping("/{scriptId}")
-    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable Long scriptId) {
-        Script script = scriptService.updateOldScript(scriptRequest, scriptId);
+    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable UUID scriptId ,Principal principal) {
+        Script script = scriptService.updateScript(scriptRequest, scriptId, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{scriptId}")
+    public void deleteScript(@PathVariable UUID scriptId, Principal principal) {
+        scriptService.deleteScriptById(scriptId, principal.getName());
     }
 }

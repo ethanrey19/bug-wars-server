@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ScriptRepository extends JpaRepository<Script,Long> {
-    List<Script> findScriptsByUser(User user);
-    Optional<Script> findScriptByName(String name);
+public interface ScriptRepository extends JpaRepository<Script, UUID> {
+    List<Script> findByUser(User user);
+    Optional<Script> findByName(String name);
 }

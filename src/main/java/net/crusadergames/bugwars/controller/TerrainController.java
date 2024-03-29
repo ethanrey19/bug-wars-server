@@ -7,14 +7,17 @@ import net.crusadergames.bugwars.repository.TerrainRepository;
 import net.crusadergames.bugwars.service.TerrainService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/terrain")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class TerrainController {
 
     private final TerrainService terrainService;
@@ -25,7 +28,7 @@ public class TerrainController {
     }
 
     @GetMapping("/{terrainId}")
-    public Terrain getTerrainById(@PathVariable Long terrainId) throws Exception {
+    public Terrain getTerrainById(@PathVariable UUID terrainId) throws Exception {
         return terrainService.getTerrainById(terrainId);
     }
 
@@ -37,13 +40,13 @@ public class TerrainController {
     }
 
     @PutMapping("/{terrainId}")
-    public ResponseEntity<Terrain> updateTerrain(@PathVariable Long terrainId, @RequestBody TerrainRequest terrainRequest) throws Exception {
+    public ResponseEntity<Terrain> updateTerrain(@PathVariable UUID terrainId, @RequestBody TerrainRequest terrainRequest) throws Exception {
         Terrain terrain = terrainService.updateTerrain(terrainId, terrainRequest);
         return new ResponseEntity<>(terrain, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{terrainId}")
-    public ResponseEntity<String> deleteTerrain(@PathVariable Long terrainId) throws Exception {
+    public ResponseEntity<String> deleteTerrain(@PathVariable UUID terrainId) throws Exception {
         String response = terrainService.deleteTerrainById(terrainId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
