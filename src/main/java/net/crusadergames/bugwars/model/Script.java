@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import net.crusadergames.bugwars.model.auth.User;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "scripts")
@@ -22,9 +21,9 @@ import java.util.UUID;
 public class Script {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "script_id")
-    private UUID scriptId;
+    private Long scriptId;
 
     @NotBlank
     @Size(max = 25)

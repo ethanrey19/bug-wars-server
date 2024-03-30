@@ -40,7 +40,7 @@ public class GameMapService {
         return mapList;
     }
 
-    public GameMap getGameMapById(UUID gameMapId) throws Exception {
+    public GameMap getGameMapById(Long gameMapId) throws Exception {
         Optional<GameMap> optionalGameMap = gameMapRepository.findById(gameMapId);
         throwMapNotFound(optionalGameMap);
         GameMap gameMap = optionalGameMap.get();
@@ -57,7 +57,7 @@ public class GameMapService {
         return gameMap;
     }
 
-    public GameMap updateMap(UUID gameMapId, GameMapRequest gameMapRequest) throws Exception {
+    public GameMap updateMap(Long gameMapId, GameMapRequest gameMapRequest) throws Exception {
         throwMapNameOrBodyBlank(gameMapRequest);
 
         Optional<GameMap> optionalGameMap = gameMapRepository.findById(gameMapId);
@@ -71,7 +71,7 @@ public class GameMapService {
         return newGameMap;
     }
 
-    public String deleteGameMapById(UUID gameMapId) throws Exception{
+    public String deleteGameMapById(Long gameMapId) throws Exception{
         Optional<GameMap> optionalGameMap = gameMapRepository.findById(gameMapId);
         throwMapNotFound(optionalGameMap);
 
