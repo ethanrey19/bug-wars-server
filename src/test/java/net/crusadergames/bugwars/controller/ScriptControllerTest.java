@@ -41,11 +41,9 @@ public class ScriptControllerTest {
 
     private ScriptService scriptService;
     private ScriptController scriptController;
-    private Principal mockPrincipal;
 
     @BeforeEach
     public void beforeEachTest(){
-        mockPrincipal = Mockito.mock(Principal.class);
         scriptService = Mockito.mock(ScriptService.class);
         scriptController = new ScriptController(scriptService);
     }
@@ -53,9 +51,9 @@ public class ScriptControllerTest {
     @Test
     public void postScripts_shouldReturnCreatedScript() {
         ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-        when(scriptService.createNewScript(mockPrincipal, request)).thenReturn(SCRIPT_1);
+        when(scriptService.createNewScript(1L, request)).thenReturn(SCRIPT_1);
 
-        ResponseEntity<Script> createdScript = scriptController.postScript(request, mockPrincipal);
+        ResponseEntity<Script> createdScript = scriptController.postScript(request, 1L);
 
         Assert.assertEquals(SCRIPT_1, createdScript.getBody());
         Assert.assertEquals(HttpStatus.CREATED, createdScript.getStatusCode());
@@ -63,9 +61,9 @@ public class ScriptControllerTest {
 
     @Test
     public void deleteScript_shouldReturnDeletedScriptMessage() {
-        when(scriptService.deleteScriptById(1L, mockPrincipal)).thenReturn("Script Deleted");
+        when(scriptService.deleteScriptById(2L)).thenReturn("Script Deleted");
 
-        ResponseEntity<String> deletedScript = scriptController.deleteScript(1L, mockPrincipal);
+        ResponseEntity<String> deletedScript = scriptController.deleteScript(2L);
 
         Assert.assertEquals("Script Deleted", deletedScript.getBody());
         Assert.assertEquals(HttpStatus.OK, deletedScript.getStatusCode());
@@ -73,9 +71,9 @@ public class ScriptControllerTest {
 
     @Test
     public void getUserScript_shouldReturnUserScript() {
-        when(scriptService.getScript(1L, mockPrincipal)).thenReturn(SCRIPT_1);
+        when(scriptService.getScript(1L)).thenReturn(SCRIPT_1);
 
-        ResponseEntity<Script> retrievedScript = scriptController.getUserScript(1L, mockPrincipal);
+        ResponseEntity<Script> retrievedScript = scriptController.getUserScript(1L);
 
         Assert.assertEquals(SCRIPT_1, retrievedScript.getBody());
         Assert.assertEquals(HttpStatus.OK, retrievedScript.getStatusCode());
@@ -86,9 +84,9 @@ public class ScriptControllerTest {
         List<Script> expectedScript = new ArrayList<>();
         expectedScript.add(SCRIPT_Uno);
         expectedScript.add(SCRIPT_Dos);
-        when(scriptService.getAllScriptsByUser(mockPrincipal)).thenReturn(expectedScript);
+        when(scriptService.getAllScriptsByUser(1L)).thenReturn(expectedScript);
 
-        List<Script> listOfScripts = scriptController.getAllScriptsByUser(mockPrincipal);
+        List<Script> listOfScripts = scriptController.getAllScriptsByUser(1L);
 
         Assert.assertEquals(expectedScript, listOfScripts);
     }
@@ -96,9 +94,9 @@ public class ScriptControllerTest {
     @Test
     public void updateScript_shouldReturnUpdatedScript() {
         ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-        when(scriptService.updateOldScript(mockPrincipal, request, 1L)).thenReturn(SCRIPT_1);
+        when(scriptService.updateOldScript(request, 1L)).thenReturn(SCRIPT_1);
 
-        ResponseEntity<Script> updatedScript = scriptController.updateScript(request, mockPrincipal, 1L);
+        ResponseEntity<Script> updatedScript = scriptController.updateScript(request, 1L);
 
         Assert.assertEquals(SCRIPT_1, updatedScript.getBody());
         Assert.assertEquals(HttpStatus.ACCEPTED, updatedScript.getStatusCode());

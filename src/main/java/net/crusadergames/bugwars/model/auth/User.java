@@ -15,6 +15,7 @@ import net.crusadergames.bugwars.model.Script;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users",
@@ -27,8 +28,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank
     @Size(min = 3, max = 50)
@@ -60,13 +61,13 @@ public class User {
         this.email = email;
         this.password = password;
     }
-    public User(Long id, String username, String email, String password) {
+    public User(UUID id, String username, String email, String password) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
     }
-    public User(Long id, String username, String email, String password,Set<Role> roles) {
+    public User(UUID id, String username, String email, String password,Set<Role> roles) {
         this.id = id;
         this.username = username;
         this.email = email;

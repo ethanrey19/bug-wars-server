@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "entities")
 @Data
@@ -16,17 +18,16 @@ import lombok.NoArgsConstructor;
 public class MapEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank
     @Size(max = 25)
     @Column(unique = true)
     private String name;
 
-    @NotNull
     @Column(name = "code")
-    private Long entityCode;
+    private String entityCode;
 
     @NotBlank
     @Column(name = "image")
