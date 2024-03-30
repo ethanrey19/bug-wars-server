@@ -12,6 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GameRequest {
 
-    private UUID mapId;
+    private Long mapId;
     private List<UUID> scriptIds;
 }

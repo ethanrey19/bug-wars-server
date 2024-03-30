@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface GameMapRepository extends JpaRepository<GameMap, UUID> {
+public interface GameMapRepository extends JpaRepository<GameMap, Long> {
 
     Optional<GameMap> findGameMapByName(String name);
 

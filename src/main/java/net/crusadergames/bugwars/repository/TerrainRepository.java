@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface TerrainRepository extends JpaRepository<Terrain, UUID> {
+public interface TerrainRepository extends JpaRepository<Terrain, Long> {
 
     Optional<Terrain> findByNameIgnoreCase(String name);
 }

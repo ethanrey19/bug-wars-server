@@ -44,19 +44,19 @@ VALUES
 ('2980c080-6d2f-4986-8120-bf42e570117d', 'Guest Script C','RIGHT','2024-01-28','2024-01-28',(SELECT id FROM users WHERE username = 'guest_user')),
 ('3ea558d1-809c-4fca-a9e0-325d15f3deaa', 'Guest Script D','EAT','2024-01-28','2024-01-28',(SELECT id FROM users WHERE username = 'guest_user'));
 
-INSERT INTO terrain (id, name, image)
+INSERT INTO terrain (name, image)
 VALUES
-('676f1603-1e99-4ccd-b197-411a05687b5a', 'Grass', 'src/assets/terrain/grass.png'),
-('f089a2c7-b9ef-4495-92a6-29524a196fc9', 'Wall', 'src/assets/terrain/wall.png');
+( 'Grass', 'src/assets/terrain/grass.png'),
+( 'Wall', 'src/assets/terrain/wall.png');
 
-INSERT INTO game_maps (id,name, height, width, body, image)
+INSERT INTO game_maps (name, height, width, body, image)
 VALUES
-('fcf986ea-5b8b-453c-b10e-8b89e11afa4d', 'Map 1', 11, 11,
+('Map 1', 11, 11,
 'XXXXXXXXXXX\nX000010000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nXXXXXXXXXXX\n',
 'src/assets/images/map-0.png'),
-('64a2372b-3189-48df-9da7-fa6f8e4ab665', 'Map 2', 11, 11,
+('Map 2', 11, 11,
 'XXXXXXXXXXX\nX000010000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nXXXXXXXXXXX\n',
 'src/assets/images/map-1.png'),
-('d8f78109-a536-4dac-bacb-aa3afcdeeef3', 'Map 3', 11, 11,
+('Map 3', 11, 11,
 'XXXXXXXXXXX\nX000010000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nX000000000X\nXXXXXXXXXXX\n',
 'src/assets/images/map-2.png');

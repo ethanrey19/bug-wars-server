@@ -27,7 +27,7 @@ public class GameMapController {
     }
 
     @GetMapping("/{gameMapId}")
-    public GameMap getGameMapById(@PathVariable UUID gameMapId) throws Exception {
+    public GameMap getGameMapById(@PathVariable Long gameMapId) throws Exception {
         return gameMapService.getGameMapById(gameMapId);
     }
 
@@ -39,13 +39,13 @@ public class GameMapController {
     }
 
     @PutMapping("/{gameMapId}")
-    public ResponseEntity<GameMap> updateGameMap(@PathVariable UUID gameMapId, @RequestBody GameMapRequest gameMapRequest) throws Exception{
+    public ResponseEntity<GameMap> updateGameMap(@PathVariable Long gameMapId, @RequestBody GameMapRequest gameMapRequest) throws Exception{
         GameMap gameMap = gameMapService.updateMap(gameMapId, gameMapRequest);
         return new ResponseEntity<>(gameMap, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{gameMapId}")
-    public ResponseEntity<String> deleteGameMap(@PathVariable UUID gameMapId) throws Exception {
+    public ResponseEntity<String> deleteGameMap(@PathVariable Long gameMapId) throws Exception {
         String response = gameMapService.deleteGameMapById(gameMapId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

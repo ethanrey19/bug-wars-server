@@ -27,7 +27,7 @@ public class MapEntityController {
     }
 
     @GetMapping("/{entityId}")
-    public MapEntity getEntityById(@PathVariable UUID entityId) throws Exception {
+    public MapEntity getEntityById(@PathVariable Long entityId) throws Exception {
         return mapEntityService.getEntityById(entityId);
     }
 
@@ -39,13 +39,13 @@ public class MapEntityController {
     }
 
     @PutMapping("/{entityId}")
-    public ResponseEntity<MapEntity> updateEntity(@PathVariable UUID entityId, @RequestBody MapEntityRequest mapEntityRequest) throws Exception {
+    public ResponseEntity<MapEntity> updateEntity(@PathVariable Long entityId, @RequestBody MapEntityRequest mapEntityRequest) throws Exception {
         MapEntity mapEntity = mapEntityService.updateEntity(entityId, mapEntityRequest);
         return new ResponseEntity<>(mapEntity, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{entityId}")
-    public ResponseEntity<String> deleteEntity(@PathVariable UUID entityId) throws Exception {
+    public ResponseEntity<String> deleteEntity(@PathVariable Long entityId) throws Exception {
         String response = mapEntityService.deleteEntityById(entityId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

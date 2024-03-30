@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface MapEntityRepository extends JpaRepository<MapEntity, UUID> {
+public interface MapEntityRepository extends JpaRepository<MapEntity, Long> {
 
     Optional<MapEntity> findByNameIgnoreCase(String name);
 }

@@ -32,6 +32,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -55,13 +56,15 @@ public class ScriptControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final User USER = new User(1L,"jeff", "gmail@email.com", "passing");
-    private final User USER_2 = new User(2L,"mac", "gmail@email.com", "passing");
+    private UUID uuid = UUID.randomUUID();
+
+    private final User USER = new User(uuid,"jeff", "gmail@email.com", "passing");
+    private final User USER_2 = new User(uuid,"mac", "gmail@email.com", "passing");
 
     @Test
     public void postScript_ReturnBadRequestIfInvalidRequest() throws Exception {
         SampleString string = SampleString.builder().content("polar bear").build();
-        when(scriptService.createNewScript(any(), any())).thenThrow(new ScriptSaveException());
+        when(scriptService.createScript(any(), any())).thenThrow(new ScriptSaveException());
 
         mockMvc.perform(post("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +75,7 @@ public class ScriptControllerIT {
     @Test
     public void postScript_ReturnConflictException() throws Exception {
         SampleString string = SampleString.builder().content("polar bear").build();
-        when(scriptService.createNewScript(any(), any())).thenThrow(new ScriptNameAlreadyExistsException());
+        when(scriptService.createScript(any(), any())).thenThrow(new ScriptNameAlreadyExistsException());
 
         mockMvc.perform(post("/api/scripts/user-scripts/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,10 +86,10 @@ public class ScriptControllerIT {
     @Test
     public void postScript_ReturnResponseIfValidRequest() throws Exception {
         ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-        Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        when(scriptService.createNewScript(1L, request)).thenReturn(scriptRes);
+        Script scriptRes = new Script(uuid, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        when(scriptService.createScript(request, USER.getUsername())).thenReturn(scriptRes);
 
-        ResultActions response = mockMvc.perform(post("/api/scripts/user-scripts/1")
+        ResultActions response = mockMvc.perform(post("/api/scripts/user-scripts/" + uuid)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .characterEncoding("utf-8")
@@ -121,7 +124,7 @@ public class ScriptControllerIT {
 
     @Test
     public void getUserScript_ReturnScriptNotFoundException() throws Exception {
-        when(scriptService.getScript(any())).thenThrow(new ScriptNotFoundException());
+        when(scriptService.getScriptById(any())).thenThrow(new ScriptNotFoundException());
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/scripts/{id}", 2)
@@ -133,7 +136,7 @@ public class ScriptControllerIT {
     @Test
     public void getUserScript_ReturnScriptIfSuccess() throws Exception {
         Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        when(scriptService.getScript(1L)).thenReturn(scriptRes);
+        when(scriptService.getScriptById(1L)).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/scripts/{id}", 1)
