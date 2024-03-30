@@ -27,7 +27,7 @@ public class MapEntityService {
         return entityList;
     }
 
-    public MapEntity getEntityById(UUID entityId) throws Exception {
+    public MapEntity getEntityById(Long entityId) throws Exception {
         Optional<MapEntity> optionalMapEntity = mapEntityRepository.findById(entityId);
         throwEntityNotFound(optionalMapEntity);
         MapEntity mapEntity = optionalMapEntity.get();
@@ -44,7 +44,7 @@ public class MapEntityService {
         return entity;
     }
 
-    public MapEntity updateEntity(UUID entityId, MapEntityRequest mapEntityRequest) throws Exception {
+    public MapEntity updateEntity(Long entityId, MapEntityRequest mapEntityRequest) throws Exception {
         throwEntityNameBlank(mapEntityRequest);
 
         Optional<MapEntity> optionalMapEntity = mapEntityRepository.findById(entityId);
@@ -58,7 +58,7 @@ public class MapEntityService {
         return newEntity;
     }
 
-    public String deleteEntityById(UUID entityId) throws Exception {
+    public String deleteEntityById(Long entityId) throws Exception {
         Optional<MapEntity> optionalMapEntity = mapEntityRepository.findById(entityId);
         throwEntityNotFound(optionalMapEntity);
 

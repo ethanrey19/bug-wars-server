@@ -28,7 +28,7 @@ public class TerrainController {
     }
 
     @GetMapping("/{terrainId}")
-    public Terrain getTerrainById(@PathVariable UUID terrainId) throws Exception {
+    public Terrain getTerrainById(@PathVariable Long terrainId) throws Exception {
         return terrainService.getTerrainById(terrainId);
     }
 
@@ -40,13 +40,13 @@ public class TerrainController {
     }
 
     @PutMapping("/{terrainId}")
-    public ResponseEntity<Terrain> updateTerrain(@PathVariable UUID terrainId, @RequestBody TerrainRequest terrainRequest) throws Exception {
+    public ResponseEntity<Terrain> updateTerrain(@PathVariable Long terrainId, @RequestBody TerrainRequest terrainRequest) throws Exception {
         Terrain terrain = terrainService.updateTerrain(terrainId, terrainRequest);
         return new ResponseEntity<>(terrain, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{terrainId}")
-    public ResponseEntity<String> deleteTerrain(@PathVariable UUID terrainId) throws Exception {
+    public ResponseEntity<String> deleteTerrain(@PathVariable Long terrainId) throws Exception {
         String response = terrainService.deleteTerrainById(terrainId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
