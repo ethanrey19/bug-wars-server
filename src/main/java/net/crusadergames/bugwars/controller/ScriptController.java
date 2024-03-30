@@ -36,7 +36,7 @@ public class ScriptController {
     }
 
     @GetMapping("/{scriptId}")
-    public ResponseEntity<Script> getScriptById(@PathVariable UUID scriptId, Principal principal) {
+    public ResponseEntity<Script> getScriptById(@PathVariable Long scriptId, Principal principal) {
         Script script = scriptService.getScriptById(scriptId, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.OK);
@@ -55,14 +55,14 @@ public class ScriptController {
     }
 
     @PutMapping("/{scriptId}")
-    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable UUID scriptId ,Principal principal) {
+    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable Long scriptId ,Principal principal) {
         Script script = scriptService.updateScript(scriptRequest, scriptId, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{scriptId}")
-    public void deleteScript(@PathVariable UUID scriptId, Principal principal) {
+    public void deleteScript(@PathVariable Long scriptId, Principal principal) {
         scriptService.deleteScriptById(scriptId, principal.getName());
     }
 }

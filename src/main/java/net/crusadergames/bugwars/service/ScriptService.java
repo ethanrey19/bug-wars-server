@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public class ScriptService {
         return script;
     }
 
-    public Script getScriptById(UUID scriptId, String username) {
+    public Script getScriptById(Long scriptId, String username) {
         User user = getUserFromUsername(username);
         Script script = getScriptFromId(scriptId);
 
@@ -74,7 +73,7 @@ public class ScriptService {
         return script;
     }
 
-    public Script updateScript(ScriptRequest scriptRequest, UUID scriptId, String username) {
+    public Script updateScript(ScriptRequest scriptRequest, Long scriptId, String username) {
         Script oldScript = getScriptFromId(scriptId);
 
         User user = getUserFromUsername(username);
@@ -87,7 +86,7 @@ public class ScriptService {
         return newScript;
     }
 
-    public void deleteScriptById(UUID scriptId, String username) {
+    public void deleteScriptById(Long scriptId, String username) {
         User user = getUserFromUsername(username);
         Script script = getScriptFromId(scriptId);
 
@@ -101,7 +100,7 @@ public class ScriptService {
                 .orElseThrow(() -> new UserNotFoundException());
     }
 
-    private Script getScriptFromId(UUID id) {
+    private Script getScriptFromId(Long id) {
         return scriptRepository.findById(id)
                 .orElseThrow(() -> new ScriptNotFoundException());
     }
