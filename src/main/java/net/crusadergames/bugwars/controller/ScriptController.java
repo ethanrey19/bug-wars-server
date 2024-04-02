@@ -29,17 +29,10 @@ public class ScriptController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public ResponseEntity<Script> createScript(@Valid @RequestBody ScriptRequest scriptRequest, Principal principal) {
+    public ResponseEntity<Script> postScript(@Valid @RequestBody ScriptRequest scriptRequest, Principal principal) {
         Script script = scriptService.createScript(scriptRequest, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{scriptId}")
-    public ResponseEntity<Script> getScriptById(@PathVariable Long scriptId, Principal principal) {
-        Script script = scriptService.getScriptById(scriptId, principal.getName());
-
-        return new ResponseEntity<>(script, HttpStatus.OK);
     }
 
     @GetMapping("/all")
@@ -47,15 +40,22 @@ public class ScriptController {
         return scriptService.getAllScriptsByUser(principal.getName());
     }
 
+    @GetMapping("/{scriptId}")
+    public ResponseEntity<Script> getScript(@PathVariable Long scriptId, Principal principal) {
+        Script script = scriptService.getScript(scriptId, principal.getName());
+
+        return new ResponseEntity<>(script, HttpStatus.OK);
+    }
+
     @GetMapping("/name/{scriptName}")
-    public ResponseEntity<Script> getScriptByName(@PathVariable String scriptName, Principal principal){
+    public ResponseEntity<Script> getScriptByName(@PathVariable String scriptName, Principal principal) {
         Script script = scriptService.getScriptByName(scriptName, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.OK);
     }
 
     @PutMapping("/{scriptId}")
-    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable Long scriptId ,Principal principal) {
+    public ResponseEntity<Script> updateScript(@RequestBody ScriptRequest scriptRequest, @PathVariable Long scriptId, Principal principal) {
         Script script = scriptService.updateScript(scriptRequest, scriptId, principal.getName());
 
         return new ResponseEntity<>(script, HttpStatus.ACCEPTED);
