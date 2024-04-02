@@ -27,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -104,7 +105,7 @@ public class AuthServiceTests {
         when(authenticationManager.authenticate(Mockito.any())).thenReturn(mockAuthentication);
 
         UserDetailsImpl mockUserDetails = new UserDetailsImpl(
-                1L,
+                UUID.randomUUID(),
                 loginRequest.getUsername(),
                 loginRequest.getPassword(),
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))

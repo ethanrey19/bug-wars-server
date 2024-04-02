@@ -7,7 +7,6 @@ import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,11 +17,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScriptService {
 
-    @Autowired
-    ScriptRepository scriptRepository;
+    private final ScriptRepository scriptRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
 
     public Script createScript(ScriptRequest scriptRequest, String username) {
         if (scriptRequest.getName().isBlank() || scriptRequest.getBody().isBlank()) {
@@ -43,7 +41,12 @@ public class ScriptService {
         return script;
     }
 
-    public Script getScriptById(Long scriptId, String username) {
+    public List<Script> getAllScriptsByUser(String username) {
+        User user = getUserFromUsername(username);
+        return scriptRepository.findByUser(user);
+    }
+
+    public Script getScript(Long scriptId, String username) {
         User user = getUserFromUsername(username);
         Script script = getScriptFromId(scriptId);
 
@@ -52,17 +55,11 @@ public class ScriptService {
         return script;
     }
 
-    public List<Script> getAllScriptsByUser(String username) {
-        User user = getUserFromUsername(username);
-        return scriptRepository.findByUser(user);
-    }
-
-
     public Script getScriptByName(String scriptName, String username) {
         User user = getUserFromUsername(username);
         Optional<Script> optionalScript = scriptRepository.findByName(scriptName);
 
-        if(optionalScript.isEmpty()){
+        if (optionalScript.isEmpty()) {
             throw new ScriptNotFoundException();
         }
 
@@ -105,7 +102,7 @@ public class ScriptService {
                 .orElseThrow(() -> new ScriptNotFoundException());
     }
 
-    private void throwScriptDoesNotBelongToUser(User user, User scriptUser) {
+    public void throwScriptDoesNotBelongToUser(User user, User scriptUser) {
         if (!user.getId().equals(scriptUser.getId())) {
             throw new ScriptDoesNotBelongToUserException();
         }
