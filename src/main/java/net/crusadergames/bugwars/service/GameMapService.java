@@ -52,6 +52,7 @@ public class GameMapService {
 
         mapNameAlreadyExists(gameMapRequest.getName());
 
+
         GameMap gameMap = new GameMap(null, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
         gameMap = gameMapRepository.save(gameMap);
         return gameMap;

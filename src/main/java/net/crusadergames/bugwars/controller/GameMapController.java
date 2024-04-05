@@ -10,13 +10,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/maps")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("isAuthenticated()")
 public class GameMapController {
 
     private final GameMapService gameMapService;
@@ -33,18 +32,21 @@ public class GameMapController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GameMap> postGameMap(@RequestBody GameMapRequest gameMapRequest) throws Exception{
         GameMap gameMap = gameMapService.createNewGameMap(gameMapRequest);
         return new ResponseEntity<>(gameMap, HttpStatus.CREATED);
     }
 
     @PutMapping("/{gameMapId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GameMap> updateGameMap(@PathVariable Long gameMapId, @RequestBody GameMapRequest gameMapRequest) throws Exception{
         GameMap gameMap = gameMapService.updateMap(gameMapId, gameMapRequest);
         return new ResponseEntity<>(gameMap, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{gameMapId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteGameMap(@PathVariable Long gameMapId) throws Exception {
         String response = gameMapService.deleteGameMapById(gameMapId);
         return new ResponseEntity<>(response, HttpStatus.OK);

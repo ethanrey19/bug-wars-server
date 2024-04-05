@@ -94,12 +94,12 @@ public class ScriptService {
 
     private User getUserFromUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Script getScriptFromId(Long id) {
         return scriptRepository.findById(id)
-                .orElseThrow(() -> new ScriptNotFoundException());
+                .orElseThrow(ScriptNotFoundException::new);
     }
 
     public void throwScriptDoesNotBelongToUser(User user, User scriptUser) {

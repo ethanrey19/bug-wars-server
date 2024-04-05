@@ -23,8 +23,10 @@ public class MapEntity {
 
     @NotBlank
     @Size(max = 25)
-    @Column(unique = true)
+    @Column(unique = false)
     private String name;
+
+    // BUG eats = new MapEntity name
 
     @Column(name = "code")
     private String entityCode;
