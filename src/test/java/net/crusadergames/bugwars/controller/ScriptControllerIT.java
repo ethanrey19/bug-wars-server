@@ -3,7 +3,6 @@ package net.crusadergames.bugwars.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.exceptions.*;
-import net.crusadergames.bugwars.model.SampleString;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
@@ -63,25 +62,25 @@ public class ScriptControllerIT {
 
     @Test
     public void postScript_ReturnBadRequestIfInvalidRequest() throws Exception {
-        SampleString string = SampleString.builder().content("polar bear").build();
+        ScriptRequest request = new ScriptRequest("First Script", "ATT");
         when(scriptService.createScript(any(), any())).thenThrow(new ScriptSaveException());
 
         mockMvc.perform(post("/api/scripts")
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(string)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void postScript_ReturnConflictException() throws Exception {
-        SampleString string = SampleString.builder().content("polar bear").build();
+        ScriptRequest request = new ScriptRequest("First Script", "ATT");
         when(scriptService.createScript(any(), any())).thenThrow(new ScriptNameAlreadyExistsException());
 
         mockMvc.perform(post("/api/scripts")
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(string)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
     }
 

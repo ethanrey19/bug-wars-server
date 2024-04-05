@@ -21,25 +21,6 @@ public class MoveCommand implements GameCommand {
     }
 
     private boolean isFloor(Point point, GameMap gameMap) {
-        String body = "" +
-                "XXXXXXXXXXX\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "X000000000X\n" +
-                "XXXXXXXXXXX";
-
-        int width = gameMap.getWidth();
-        int height = gameMap.getHeight();
-        int x = point.x;
-        int y = point.y;
-
-        System.out.println(body.charAt(y * height));
         return false;
     }
 }

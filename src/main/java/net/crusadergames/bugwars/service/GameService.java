@@ -9,7 +9,6 @@ import net.crusadergames.bugwars.game.Direction;
 import net.crusadergames.bugwars.game.Game;
 import net.crusadergames.bugwars.game.GameEntity;
 import net.crusadergames.bugwars.model.GameMap;
-import net.crusadergames.bugwars.model.MapEntity;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.repository.GameMapRepository;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
@@ -31,7 +30,7 @@ public class GameService {
         GameMap gameMap = getGameMapFromId(gameRequest.getMapId());
         List<GameEntity> gameEntities = createBugs(gameRequest.getScriptIds());
 
-        Game game = new Game(gameMap, gameEntities, 15);
+        Game game = new Game(gameMap, gameEntities, 2);
         return game.play();
     }
 
