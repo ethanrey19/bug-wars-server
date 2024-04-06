@@ -3,6 +3,11 @@ package net.crusadergames.bugwars.service;
 import lombok.RequiredArgsConstructor;
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.exceptions.*;
+import net.crusadergames.bugwars.exceptions.parser.SyntaxException;
+import net.crusadergames.bugwars.exceptions.script.ScriptDoesNotBelongToUserException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNameAlreadyExistsException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNotFoundException;
+import net.crusadergames.bugwars.exceptions.script.ScriptSaveException;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
@@ -21,6 +26,8 @@ public class ScriptService {
 
     private final UserRepository userRepository;
 
+    private final ParserService parserService;
+
 
     public Script createScript(ScriptRequest scriptRequest, String username) {
         if (scriptRequest.getName().isBlank() || scriptRequest.getBody().isBlank()) {
@@ -34,7 +41,15 @@ public class ScriptService {
 
         User user = getUserFromUsername(username);
 
-        Script script = new Script(null, scriptRequest.getName(), scriptRequest.getBody(), LocalDate.now(), LocalDate.now(), user);
+        List<Integer> bytecode;
+        try{
+            bytecode = parserService.returnByteCode(scriptRequest.getBody());
+        } catch (SyntaxException e) {
+            throw new SyntaxException(e.getMessage());
+        }
+
+        System.out.println(bytecode.toString());
+        Script script = new Script(null, scriptRequest.getName(), scriptRequest.getBody(), bytecode.toString(), LocalDate.now(), LocalDate.now(), user);
 
         script = scriptRepository.save(script);
 
@@ -76,8 +91,15 @@ public class ScriptService {
         User user = getUserFromUsername(username);
         throwScriptDoesNotBelongToUser(user, oldScript.getUser());
 
+        List<Integer> bytecode;
+        try{
+            bytecode = parserService.returnByteCode(scriptRequest.getBody());
+        } catch (SyntaxException e) {
+            throw new SyntaxException(e.getMessage());
+        }
+
         LocalDate currentDate = LocalDate.now();
-        Script newScript = new Script(scriptId, scriptRequest.getName(), scriptRequest.getBody(), oldScript.getDateCreated(), currentDate, oldScript.getUser());
+        Script newScript = new Script(scriptId, scriptRequest.getName(), scriptRequest.getBody(), bytecode.toString(), oldScript.getDateCreated(), currentDate, oldScript.getUser());
         scriptRepository.save(newScript);
 
         return newScript;
@@ -94,12 +116,12 @@ public class ScriptService {
 
     private User getUserFromUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Script getScriptFromId(Long id) {
         return scriptRepository.findById(id)
-                .orElseThrow(() -> new ScriptNotFoundException());
+                .orElseThrow(ScriptNotFoundException::new);
     }
 
     public void throwScriptDoesNotBelongToUser(User user, User scriptUser) {

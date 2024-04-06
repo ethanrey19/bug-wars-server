@@ -4,7 +4,7 @@ import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.service.ScriptService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,14 +22,11 @@ import static org.mockito.Mockito.when;
 public class ScriptControllerTest {
 
     private final User USER = new User(UUID.randomUUID(), "jeff", "gmail@email.com", "passing");
-    private final User USER_2 = new User(UUID.randomUUID(), "mac", "gmail@email.com", "passing");
     private final User USER_NEW = new User(UUID.randomUUID(), "andrew", "gmail@email.com", "passing");
-    private final User USER_FAKE = new User();
 
-    private final Script SCRIPT_1 = new Script(1L, "First Script", "I am a script", LocalDate.now(), LocalDate.now(), USER);
-    private final Script SCRIPT_2 = new Script(2L, "Second Script", "Eat chicken", LocalDate.now(), LocalDate.now(), USER_2);
-    private final Script SCRIPT_Uno = new Script(1L, "Old Script", "Old Food!", LocalDate.now(), LocalDate.now(), USER_NEW);
-    private final Script SCRIPT_Dos = new Script(1L, "andrew", "Updated Script", LocalDate.now(), LocalDate.now(), USER_NEW);
+    private final Script SCRIPT_1 = new Script(1L, "First Script", "I am a script", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER);
+    private final Script SCRIPT_Uno = new Script(1L, "Old Script", "Old Food!", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
+    private final Script SCRIPT_Dos = new Script(1L, "andrew", "Updated Script", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
 
 
     private ScriptService scriptService;
@@ -55,8 +52,8 @@ public class ScriptControllerTest {
 
         ResponseEntity<Script> createdScript = scriptController.postScript(request, principal);
 
-        Assert.assertEquals(SCRIPT_1, createdScript.getBody());
-        Assert.assertEquals(HttpStatus.CREATED, createdScript.getStatusCode());
+        Assertions.assertEquals(SCRIPT_1, createdScript.getBody());
+        Assertions.assertEquals(HttpStatus.CREATED, createdScript.getStatusCode());
     }
 
     @Test
@@ -68,7 +65,7 @@ public class ScriptControllerTest {
 
         List<Script> listOfScripts = scriptController.getAllScriptsByUser(principal_NEW);
 
-        Assert.assertEquals(expectedScript, listOfScripts);
+        Assertions.assertEquals(expectedScript, listOfScripts);
     }
 
     @Test
@@ -77,8 +74,8 @@ public class ScriptControllerTest {
 
         ResponseEntity<Script> retrievedScript = scriptController.getScript(1L, principal);
 
-        Assert.assertEquals(SCRIPT_1, retrievedScript.getBody());
-        Assert.assertEquals(HttpStatus.OK, retrievedScript.getStatusCode());
+        Assertions.assertEquals(SCRIPT_1, retrievedScript.getBody());
+        Assertions.assertEquals(HttpStatus.OK, retrievedScript.getStatusCode());
     }
 
     @Test
@@ -87,8 +84,8 @@ public class ScriptControllerTest {
 
         ResponseEntity<Script> retrievedScript = scriptController.getScriptByName(SCRIPT_1.getName(), principal);
 
-        Assert.assertEquals(SCRIPT_1, retrievedScript.getBody());
-        Assert.assertEquals(HttpStatus.OK, retrievedScript.getStatusCode());
+        Assertions.assertEquals(SCRIPT_1, retrievedScript.getBody());
+        Assertions.assertEquals(HttpStatus.OK, retrievedScript.getStatusCode());
     }
 
 
@@ -99,8 +96,8 @@ public class ScriptControllerTest {
 
         ResponseEntity<Script> updatedScript = scriptController.updateScript(request, 1L, principal);
 
-        Assert.assertEquals(SCRIPT_1, updatedScript.getBody());
-        Assert.assertEquals(HttpStatus.ACCEPTED, updatedScript.getStatusCode());
+        Assertions.assertEquals(SCRIPT_1, updatedScript.getBody());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, updatedScript.getStatusCode());
     }
 
 }

@@ -1,9 +1,9 @@
 package net.crusadergames.bugwars.controller;
 
 import net.crusadergames.bugwars.dto.request.GameMapRequest;
-import net.crusadergames.bugwars.exceptions.MapNameAlreadyExistsException;
-import net.crusadergames.bugwars.exceptions.MapNameOrBodyBlankException;
 import net.crusadergames.bugwars.exceptions.NotAnAdminException;
+import net.crusadergames.bugwars.exceptions.map.MapNameAlreadyExistsException;
+import net.crusadergames.bugwars.exceptions.map.MapNameOrBodyBlankException;
 import net.crusadergames.bugwars.model.GameMap;
 import net.crusadergames.bugwars.model.auth.ERole;
 import net.crusadergames.bugwars.model.auth.Role;
@@ -11,45 +11,57 @@ import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
 import net.crusadergames.bugwars.service.GameMapService;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GameMapControllerIT {
 
-    /*
-    private final User USER = new User(1L,"user", "gmail@email.com", "passing", Set.of(new Role(1, ERole.ROLE_USER)));
-    private final User ADMIN = new User(2L,"admin", "gmail@email.com", "passing",Set.of(new Role(3,
-            ERole.ROLE_ADMIN)));
+    private final User USER = new User(UUID.randomUUID(),"user", "gmail@email.com", "passing", Set.of(new Role(1, ERole.ROLE_USER)));
 
-    private final GameMap MAP_1 = new GameMap(1L,"Map 1",5L,5L,"11111\n10001\n10101\n11011\n11111");
-    private final GameMap MAP_2 = new GameMap(2L,"Map 2",7L,7L,"1111111\n1000001\n1000001\n1000001\n1000001" +
-            "\n1000001\n1111111");
-    private final GameMap OLD_MAP = new GameMap(1L,"Old Map",5L,5L,"11111\n10001\n10101\n11011\n11111");
-    private final GameMap NEW_MAP = new GameMap(1L,"I Am New",2L,2L,"11\n11");
+    private final GameMap MAP_1 = new GameMap(1L, "Map 1", 11, 11, """
+            XXXXXXXXXXX
+            X000010000X
+            X000000000X
+            X000000000X
+            X000000000X
+            X000000000X
+            X000000000X
+            X000000000X
+            X000000000X
+            X000000000X""", "[[WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL], " +
+            "[WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], [WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], " +
+            "[WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], [WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], " +
+            "[WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], [WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], " +
+            "[WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], [WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], " +
+            "[WALL, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, FLOOR, WALL], [WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL]]",
+            "src/assets/images/map-0.png");
+    private final GameMap MAP_2 = new GameMap(2L,"Map 2",7,7, """
+            1111111
+            1000001
+            1000001
+            1000001
+            1000001
+            1000001
+            1111111""", "[[WALL]]", "src/main/test");
+    private final GameMap NEW_MAP = new GameMap(1L,"I Am New",2,2, "11\n11", "[]", "src/test");
 
     private GameMapService gameMapService;
     private GameMapController gameMapController;
-    private Principal mockPrincipal;
     private UserRepository userRepository;
 
     @BeforeEach
     public void beforeEachTest() {
         gameMapService = Mockito.mock(GameMapService.class);
         gameMapController = new GameMapController(gameMapService);
-        mockPrincipal = Mockito.mock(Principal.class);
         userRepository = Mockito.mock(UserRepository.class);
     }
 
@@ -62,7 +74,7 @@ public class GameMapControllerIT {
 
         List<GameMap> listOfGameMaps = gameMapController.getAllGameMaps();
 
-        Assert.assertEquals(expectedGameMaps, listOfGameMaps);
+        Assertions.assertEquals(expectedGameMaps, listOfGameMaps);
     }
 
     @Test
@@ -71,7 +83,7 @@ public class GameMapControllerIT {
 
         GameMap retrievedMap = gameMapController.getGameMapById(1L);
 
-        Assert.assertEquals(MAP_1, retrievedMap);
+        Assertions.assertEquals(MAP_1, retrievedMap);
     }
 
     @Test
@@ -82,90 +94,88 @@ public class GameMapControllerIT {
 
     @Test
     public void postGameMapShouldReturnCreatedMap() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
-        when(gameMapService.createNewGameMap(mockPrincipal, request)).thenReturn(NEW_MAP);
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
+        when(gameMapService.createNewGameMap(request)).thenReturn(NEW_MAP);
 
-        ResponseEntity<GameMap> createdGameMap = gameMapController.postGameMap(request, mockPrincipal);
+        ResponseEntity<GameMap> createdGameMap = gameMapController.postGameMap(request);
 
-        Assert.assertEquals(NEW_MAP, createdGameMap.getBody());
-        Assert.assertEquals(HttpStatus.CREATED, createdGameMap.getStatusCode());
+        Assertions.assertEquals(NEW_MAP, createdGameMap.getBody());
+        Assertions.assertEquals(HttpStatus.CREATED, createdGameMap.getStatusCode());
     }
 
     @Test
     public void postGameMapShouldThrowExceptionIfNotAdmin() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER));
-        when(gameMapController.postGameMap(any(), any())).thenThrow(new NotAnAdminException());
-        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.postGameMap(request, mockPrincipal));
+        when(gameMapController.postGameMap(any())).thenThrow(new NotAnAdminException());
+        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.postGameMap(request));
     }
 
     @Test
     public void postGameMapShouldThrowExceptionIfMapNameAlreadyExists() throws Exception {
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
-        when(gameMapController.postGameMap(request, mockPrincipal)).thenThrow(new MapNameAlreadyExistsException());
-        Assert.assertThrows(MapNameAlreadyExistsException.class, () -> gameMapController.postGameMap(request, mockPrincipal));
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
+        when(gameMapController.postGameMap(request)).thenThrow(new MapNameAlreadyExistsException());
+        Assert.assertThrows(MapNameAlreadyExistsException.class, () -> gameMapController.postGameMap(request));
     }
 
     @Test
     public void postGameMapShouldThrowExceptionIfTitleOrBodyIsEmpty() throws Exception {
-        GameMapRequest requestEmptyTitle = new GameMapRequest("",2L,2L,"11\n11");
-        GameMapRequest requestEmptyBody = new GameMapRequest("I Am New",2L,2L,"");
-        when(gameMapController.postGameMap(requestEmptyTitle, mockPrincipal)).thenThrow(new MapNameOrBodyBlankException());
-        when(gameMapController.postGameMap(requestEmptyBody, mockPrincipal)).thenThrow(new MapNameOrBodyBlankException());
-        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.postGameMap(requestEmptyTitle, mockPrincipal));
-        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.postGameMap(requestEmptyBody, mockPrincipal));
+        GameMapRequest requestEmptyTitle = new GameMapRequest("",2,2,"11\n11", "src/test");
+        GameMapRequest requestEmptyBody = new GameMapRequest("I Am New",2,2,"", "src/test");
+        when(gameMapController.postGameMap(requestEmptyTitle)).thenThrow(new MapNameOrBodyBlankException());
+        when(gameMapController.postGameMap(requestEmptyBody)).thenThrow(new MapNameOrBodyBlankException());
+        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.postGameMap(requestEmptyTitle));
+        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.postGameMap(requestEmptyBody));
     }
 
     @Test
     public void updateGameMapShouldReturnUpdatedGameMap() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
-        when(gameMapService.updateMap(mockPrincipal, request, 1L)).thenReturn(NEW_MAP);
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
+        when(gameMapService.updateMap(1L, request)).thenReturn(NEW_MAP);
 
-        ResponseEntity<GameMap> updatedGameMap = gameMapController.updateGameMap(request, mockPrincipal, 1L);
+        ResponseEntity<GameMap> updatedGameMap = gameMapController.updateGameMap(1L, request);
 
-        Assert.assertEquals(NEW_MAP, updatedGameMap.getBody());
-        Assert.assertEquals(HttpStatus.ACCEPTED, updatedGameMap.getStatusCode());
+        Assertions.assertEquals(NEW_MAP, updatedGameMap.getBody());
+        Assertions.assertEquals(HttpStatus.ACCEPTED, updatedGameMap.getStatusCode());
     }
 
     @Test
     public void updateGameMapShouldThrowExceptionIfNotAdmin() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER));
-        when(gameMapService.updateMap(mockPrincipal, request, 1L)).thenThrow(new NotAnAdminException());
-        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.updateGameMap(request, mockPrincipal, 1L));
+        when(gameMapService.updateMap(1L, request)).thenThrow(new NotAnAdminException());
+        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.updateGameMap(1L, request));
     }
 
     @Test
     public void updateGameMapShouldThrowExceptionIfTitleOrBodyIsEmpty() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
-        when(gameMapService.updateMap(mockPrincipal, request, 1L)).thenThrow(new MapNameOrBodyBlankException());
-        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.updateGameMap(request, mockPrincipal, 1L));
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
+        when(gameMapService.updateMap(1L, request)).thenThrow(new MapNameOrBodyBlankException());
+        Assert.assertThrows(MapNameOrBodyBlankException.class, () -> gameMapController.updateGameMap(1L, request));
     }
 
     @Test
     public void updateGameMapShouldThrowExceptionIfMapNameAlreadyExists() throws Exception{
-        GameMapRequest request = new GameMapRequest("I Am New",2L,2L,"11\n11");
-        when(gameMapService.updateMap(mockPrincipal, request, 1L)).thenThrow(new MapNameAlreadyExistsException());
-        Assert.assertThrows(MapNameAlreadyExistsException.class, () -> gameMapController.updateGameMap(request, mockPrincipal, 1L));
+        GameMapRequest request = new GameMapRequest("I Am New",2,2,"11\n11", "src/test");
+        when(gameMapService.updateMap(1L, request)).thenThrow(new MapNameAlreadyExistsException());
+        Assert.assertThrows(MapNameAlreadyExistsException.class, () -> gameMapController.updateGameMap(1L, request));
     }
 
     @Test
     public void deleteGameMapShouldReturnDeletedGameMapDeletedScriptMessage() throws Exception{
-        when(gameMapService.deleteGameMapById(1L, mockPrincipal)).thenReturn("Game map successfully deleted");
+        when(gameMapService.deleteGameMapById(1L)).thenReturn("Game map successfully deleted");
 
-        ResponseEntity<String> deletedGameMap = gameMapController.deleteGameMap(1L, mockPrincipal);
+        ResponseEntity<String> deletedGameMap = gameMapController.deleteGameMap(1L);
 
-        Assert.assertEquals("Game map successfully deleted", deletedGameMap.getBody());
-        Assert.assertEquals(HttpStatus.OK, deletedGameMap.getStatusCode());
+        Assertions.assertEquals("Game map successfully deleted", deletedGameMap.getBody());
+        Assertions.assertEquals(HttpStatus.OK, deletedGameMap.getStatusCode());
     }
 
     @Test
     public void deleteGameMapShouldThrowExceptionIfNotAdmin() throws Exception{
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER));
-        when(gameMapService.deleteGameMapById(1L, mockPrincipal)).thenThrow(new NotAnAdminException());
-        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.deleteGameMap(1L, mockPrincipal));
+        when(gameMapService.deleteGameMapById(1L)).thenThrow(new NotAnAdminException());
+        Assert.assertThrows(NotAnAdminException.class, () -> gameMapController.deleteGameMap(1L));
     }
 
-
-     */
 }

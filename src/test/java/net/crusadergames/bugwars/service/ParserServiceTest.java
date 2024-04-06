@@ -1,7 +1,6 @@
 package net.crusadergames.bugwars.service;
 
 import net.crusadergames.bugwars.Util.Constants;
-import net.crusadergames.bugwars.exceptions.ScriptNameAlreadyExistsException;
 import net.crusadergames.bugwars.exceptions.parser.SyntaxException;
 import net.crusadergames.bugwars.parser.Commands;
 import org.junit.Assert;
