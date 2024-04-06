@@ -106,11 +106,12 @@ public class GameMapService {
     }
 
 
-    public void mapNameAlreadyExists(String gameMapName) throws Exception {
+    public boolean mapNameAlreadyExists(String gameMapName) throws Exception {
         Optional<GameMap> optionalGameMap = gameMapRepository.findByNameIgnoreCase(gameMapName);
         if (optionalGameMap.isPresent()) {
             throw new MapNameAlreadyExistsException();
         }
+        return false;
     }
 
     public void throwMapNameOrBodyBlank(GameMapRequest gameMapRequest) throws Exception {

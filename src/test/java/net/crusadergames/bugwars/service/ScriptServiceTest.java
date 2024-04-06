@@ -11,6 +11,7 @@ import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,17 +28,11 @@ import static org.mockito.Mockito.*;
 public class ScriptServiceTest {
     private final User USER = new User(UUID.randomUUID(), "jeff", "gmail@email.com", "passing");
     private final User USER_2 = new User(UUID.randomUUID(), "mac", "gmail@email.com", "passing");
-    private final User USER_NEW = new User(UUID.randomUUID(), "andrew", "gmail@email.com", "passing");
     private final User USER_FAKE = new User();
 
     private final Script SCRIPT_1 = new Script(1L, "First Script", "mov", List.of(10).toString(), LocalDate.now(), LocalDate.now(), USER);
-    private final Script SCRIPT_2 = new Script(2L, "Second Script", "Eat chicken", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_2);
-    private final Script SCRIPT_Old = new Script(1L, "Old Script", "Old Food!", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
-    private final Script SCRIPT_NEW = new Script(1L, "andrew", "Updated Script", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
-
 
     private ScriptService scriptService;
-    private ParserService parserService;
     private ScriptRepository scriptRepository;
     private UserRepository userRepository;
 
@@ -45,7 +40,7 @@ public class ScriptServiceTest {
     public void beforeEachTest() {
         userRepository = Mockito.mock(UserRepository.class);
         scriptRepository = Mockito.mock(ScriptRepository.class);
-        parserService = new ParserService();
+        ParserService parserService = new ParserService();
         scriptService = new ScriptService(scriptRepository, userRepository, parserService);
     }
 
@@ -59,9 +54,9 @@ public class ScriptServiceTest {
 
         Script createdScript = scriptService.createScript(request, USER.getUsername());
 
-        Assert.assertNotNull(createdScript);
-        Assert.assertEquals(createdScript.getScriptId(), SCRIPT_1.getScriptId());
-        Assert.assertEquals(createdScript, SCRIPT_1);
+        Assertions.assertNotNull(createdScript);
+        Assertions.assertEquals(createdScript.getScriptId(), SCRIPT_1.getScriptId());
+        Assertions.assertEquals(createdScript, SCRIPT_1);
     }
 
 
@@ -69,7 +64,7 @@ public class ScriptServiceTest {
     public void createScript_shouldReturnScriptNameExistsExceptionWhenRelevant() {
         Assert.assertThrows(ScriptNameAlreadyExistsException.class, () -> {
             ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER));
+            when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER));
             when(scriptRepository.findByName(any())).thenReturn(Optional.of(SCRIPT_1));
 
             scriptService.createScript(request, USER.getUsername());
@@ -80,7 +75,7 @@ public class ScriptServiceTest {
     public void createScript_shouldThrowScriptSaveErrorWhenTitleIsNull() {
         Assert.assertThrows(ScriptSaveException.class, () -> {
             ScriptRequest request = new ScriptRequest("", "I am a script");
-            when(userRepository.findById(any())).thenReturn(Optional.ofNullable(USER_FAKE));
+            when(userRepository.findById(any())).thenReturn(Optional.of(USER_FAKE));
             when(scriptRepository.findByName(any())).thenReturn(Optional.empty());
             when(userRepository.save(Mockito.any(User.class))).thenReturn(USER);
 
@@ -95,9 +90,9 @@ public class ScriptServiceTest {
 
         Script script = scriptService.getScript(1L, USER.getUsername());
 
-        Assert.assertNotNull(SCRIPT_1);
-        Assert.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
-        Assert.assertEquals(script, SCRIPT_1);
+        Assertions.assertNotNull(SCRIPT_1);
+        Assertions.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
+        Assertions.assertEquals(script, SCRIPT_1);
     }
 
     @Test
@@ -117,9 +112,9 @@ public class ScriptServiceTest {
 
         Script script = scriptService.getScriptByName(SCRIPT_1.getName(), USER.getUsername());
 
-        Assert.assertNotNull(SCRIPT_1);
-        Assert.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
-        Assert.assertEquals(script, SCRIPT_1);
+        Assertions.assertNotNull(SCRIPT_1);
+        Assertions.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
+        Assertions.assertEquals(script, SCRIPT_1);
     }
 
     @Test
@@ -145,7 +140,7 @@ public class ScriptServiceTest {
 
         List<Script> script = scriptService.getAllScriptsByUser(USER.getUsername());
 
-        Assert.assertEquals(expected, script);
+        Assertions.assertEquals(expected, script);
     }
 
     @Test
@@ -169,16 +164,16 @@ public class ScriptServiceTest {
 
         Script script = scriptService.updateScript(requestNew, 1L, USER.getUsername());
 
-        Assert.assertNotNull(script);
-        Assert.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
-        Assert.assertEquals(script, SCRIPT_1);
+        Assertions.assertNotNull(script);
+        Assertions.assertEquals(script.getScriptId(), SCRIPT_1.getScriptId());
+        Assertions.assertEquals(script, SCRIPT_1);
     }
 
     @Test
     void updateOldScript_shouldThrowScriptNotFoundException() {
         Assert.assertThrows(ScriptNotFoundException.class, () -> {
             when(scriptRepository.findById(any())).thenReturn(Optional.empty());
-            when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
+            when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER_2));
 
             ScriptRequest requestNew = new ScriptRequest("andrew", "att att att");
             scriptService.updateScript(requestNew, 1L, USER_2.getUsername());

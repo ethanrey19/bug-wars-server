@@ -32,7 +32,7 @@ public class GameService {
     private final UserRepository userRepository;
 
     public GameResponse playGame(GameRequest gameRequest, String username) {
-        User user = getUserFromUsername(username);
+        getUserFromUsername(username);
         GameMap gameMap = getGameMapFromId(gameRequest.getMapId());
         List<GameEntity> gameEntities = createBugs(gameRequest.getScriptIds());
 
