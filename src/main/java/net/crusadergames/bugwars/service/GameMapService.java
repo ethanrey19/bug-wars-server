@@ -1,25 +1,18 @@
 package net.crusadergames.bugwars.service;
 
 import net.crusadergames.bugwars.dto.request.GameMapRequest;
-import net.crusadergames.bugwars.exceptions.*;
+import net.crusadergames.bugwars.exceptions.map.MapNameAlreadyExistsException;
+import net.crusadergames.bugwars.exceptions.map.MapNameOrBodyBlankException;
+import net.crusadergames.bugwars.exceptions.map.TileNotFoundException;
 import net.crusadergames.bugwars.model.GameMap;
-import net.crusadergames.bugwars.model.Script;
-import net.crusadergames.bugwars.model.auth.ERole;
-import net.crusadergames.bugwars.model.auth.Role;
-import net.crusadergames.bugwars.model.auth.User;
+import net.crusadergames.bugwars.model.Tile;
 import net.crusadergames.bugwars.repository.GameMapRepository;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NameNotFoundException;
-import javax.swing.text.html.Option;
-import java.security.Principal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class GameMapService {
@@ -36,15 +29,13 @@ public class GameMapService {
     }
 
     public List<GameMap> getAllGameMaps() {
-        List<GameMap> mapList = gameMapRepository.findAll();
-        return mapList;
+        return gameMapRepository.findAll();
     }
 
     public GameMap getGameMapById(Long gameMapId) throws Exception {
         Optional<GameMap> optionalGameMap = gameMapRepository.findById(gameMapId);
         throwMapNotFound(optionalGameMap);
-        GameMap gameMap = optionalGameMap.get();
-        return gameMap;
+        return optionalGameMap.get();
     }
 
     public GameMap createNewGameMap(GameMapRequest gameMapRequest) throws Exception {
@@ -52,8 +43,9 @@ public class GameMapService {
 
         mapNameAlreadyExists(gameMapRequest.getName());
 
+        List<List<Tile>> tiles = getTilesFromBody(gameMapRequest.getBody());
 
-        GameMap gameMap = new GameMap(null, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
+        GameMap gameMap = new GameMap(null, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), tiles.toString(), gameMapRequest.getImagePath());
         gameMap = gameMapRepository.save(gameMap);
         return gameMap;
     }
@@ -66,13 +58,15 @@ public class GameMapService {
 
         mapNameAlreadyExists(gameMapRequest.getName());
 
-        GameMap newGameMap = new GameMap(gameMapId, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), gameMapRequest.getImagePath());
+        List<List<Tile>> tiles = getTilesFromBody(gameMapRequest.getBody());
+
+        GameMap newGameMap = new GameMap(gameMapId, gameMapRequest.getName(), gameMapRequest.getHeight(), gameMapRequest.getWidth(), gameMapRequest.getBody(), tiles.toString(), gameMapRequest.getImagePath());
         gameMapRepository.save(newGameMap);
 
         return newGameMap;
     }
 
-    public String deleteGameMapById(Long gameMapId) throws Exception{
+    public String deleteGameMapById(Long gameMapId) throws Exception {
         Optional<GameMap> optionalGameMap = gameMapRepository.findById(gameMapId);
         throwMapNotFound(optionalGameMap);
 
@@ -80,7 +74,39 @@ public class GameMapService {
         return ("Game map successfully deleted");
     }
 
-    public void mapNameAlreadyExists(String gameMapName) throws Exception{
+    private List<List<Tile>> getTilesFromBody(String body) {
+        List<List<Tile>> allTiles = new ArrayList<>();
+        List<Tile> row = new ArrayList<>();
+        for (int i = 0; i < body.length(); i++) {
+            char index = body.charAt(i);
+            switch (index) {
+                case 'X' -> {
+                    row.add(Tile.WALL);
+                }
+                case '0' -> {
+                    row.add(Tile.FLOOR);
+                }
+                case '\n' -> {
+                    allTiles.add(createCopyOfTileList(row));
+                    row.clear();
+                }
+                default -> throw new TileNotFoundException();
+            }
+        }
+
+        //  add the last row if the body does not end with a newline
+        if (!row.isEmpty()) {
+            allTiles.add(createCopyOfTileList(row));
+        }
+        return allTiles;
+    }
+
+    public List<Tile> createCopyOfTileList(List<Tile> originalList) {
+        return new ArrayList<>(originalList);
+    }
+
+
+    public void mapNameAlreadyExists(String gameMapName) throws Exception {
         Optional<GameMap> optionalGameMap = gameMapRepository.findByNameIgnoreCase(gameMapName);
         if (optionalGameMap.isPresent()) {
             throw new MapNameAlreadyExistsException();

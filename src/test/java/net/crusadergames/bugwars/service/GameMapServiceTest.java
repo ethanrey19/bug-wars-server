@@ -1,27 +1,6 @@
 package net.crusadergames.bugwars.service;
 
-import lombok.SneakyThrows;
-import net.crusadergames.bugwars.dto.request.GameMapRequest;
-import net.crusadergames.bugwars.exceptions.MapNameAlreadyExistsException;
-import net.crusadergames.bugwars.exceptions.MapNameOrBodyBlankException;
-import net.crusadergames.bugwars.exceptions.NotAnAdminException;
-import net.crusadergames.bugwars.model.GameMap;
-import net.crusadergames.bugwars.model.auth.ERole;
-import net.crusadergames.bugwars.model.auth.Role;
-import net.crusadergames.bugwars.model.auth.User;
-import net.crusadergames.bugwars.repository.GameMapRepository;
-import net.crusadergames.bugwars.repository.auth.UserRepository;
-import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class GameMapServiceTest {
 

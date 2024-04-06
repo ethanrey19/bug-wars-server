@@ -3,14 +3,17 @@ package net.crusadergames.bugwars.service;
 import lombok.RequiredArgsConstructor;
 import net.crusadergames.bugwars.dto.request.GameRequest;
 import net.crusadergames.bugwars.dto.response.GameResponse;
-import net.crusadergames.bugwars.exceptions.GameMapNotFoundException;
-import net.crusadergames.bugwars.exceptions.ScriptNotFoundException;
+import net.crusadergames.bugwars.exceptions.map.MapNotFoundException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNotFoundException;
+import net.crusadergames.bugwars.exceptions.UserNotFoundException;
 import net.crusadergames.bugwars.game.Direction;
 import net.crusadergames.bugwars.game.Game;
 import net.crusadergames.bugwars.game.GameEntity;
 import net.crusadergames.bugwars.model.GameMap;
 import net.crusadergames.bugwars.model.Script;
+import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.GameMapRepository;
+import net.crusadergames.bugwars.repository.auth.UserRepository;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +29,14 @@ public class GameService {
 
     private final ScriptRepository scriptRepository;
 
-    public GameResponse playGame(GameRequest gameRequest) {
+    private final UserRepository userRepository;
+
+    public GameResponse playGame(GameRequest gameRequest, String username) {
+        User user = getUserFromUsername(username);
         GameMap gameMap = getGameMapFromId(gameRequest.getMapId());
         List<GameEntity> gameEntities = createBugs(gameRequest.getScriptIds());
 
-        Game game = new Game(gameMap, gameEntities, 2);
+        Game game = new Game(gameMap, gameEntities, 15);
         return game.play();
     }
 
@@ -52,12 +58,17 @@ public class GameService {
 
     private GameMap getGameMapFromId(Long id) {
         return gameMapRepository.findById(id)
-                .orElseThrow(GameMapNotFoundException::new);
+                .orElseThrow(MapNotFoundException::new);
     }
 
     private Script getScriptFromId(Long id) {
         return scriptRepository.findById(id)
                 .orElseThrow(ScriptNotFoundException::new);
+    }
+
+    private User getUserFromUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 }

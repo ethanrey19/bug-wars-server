@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import net.crusadergames.bugwars.model.auth.User;
+
 import java.time.LocalDate;
 
 @Entity
@@ -33,6 +34,10 @@ public class Script {
     @Column(columnDefinition = "TEXT")
     private String body;
 
+    @NotBlank
+    @Column(name = "bytecode", length = 10000)
+    private String bytecode;
+
     @NotNull
     @Column(name = "date_created")
     private LocalDate dateCreated;
@@ -46,7 +51,5 @@ public class Script {
     @JsonIgnore
     @JoinColumn(name = "owner_id")
     private User user;
-
-
 
 }

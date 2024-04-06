@@ -1,4 +1,4 @@
-package net.crusadergames.bugwars.exceptions;
+package net.crusadergames.bugwars.exceptions.script;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

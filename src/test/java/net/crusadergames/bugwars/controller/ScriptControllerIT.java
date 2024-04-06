@@ -2,7 +2,9 @@ package net.crusadergames.bugwars.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
-import net.crusadergames.bugwars.exceptions.*;
+import net.crusadergames.bugwars.exceptions.script.ScriptNameAlreadyExistsException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNotFoundException;
+import net.crusadergames.bugwars.exceptions.script.ScriptSaveException;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.script.ScriptRepository;
@@ -87,7 +89,8 @@ public class ScriptControllerIT {
     @Test
     public void postScript_ReturnResponseIfValidRequest() throws Exception {
         ScriptRequest request = new ScriptRequest("First Script", "ATT");
-        Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script scriptRes = new Script(1L, "John Doe", "att\n att\n att", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         when(scriptService.createScript(request, USER.getUsername())).thenReturn(scriptRes);
 
         ResultActions response = mockMvc.perform(post("/api/scripts")
@@ -118,8 +121,10 @@ public class ScriptControllerIT {
 
     @Test
     public void getAllScriptsByUser_ReturnScriptsIfSuccess() throws Exception {
-        Script script1 = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
-        Script script2 = new Script(2L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script script1 = new Script(1L, "John Doe", "This is a test script", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script script2 = new Script(2L, "John Doe", "This is a test script", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         List<Script> expectedScript = new ArrayList<>();
         expectedScript.add(script1);
         expectedScript.add(script2);
@@ -150,7 +155,8 @@ public class ScriptControllerIT {
 
     @Test
     public void getScript_ReturnScriptIfSuccess() throws Exception {
-        Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script scriptRes = new Script(1L, "John Doe", "This is a test script", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         when(scriptService.getScript(1L, USER.getUsername())).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -177,7 +183,8 @@ public class ScriptControllerIT {
 
     @Test
     public void getScriptByName_ReturnScriptIfSuccess() throws Exception {
-        Script scriptRes = new Script(1L, "John Doe", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script scriptRes = new Script(1L, "John Doe", "This is a test script", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         when(scriptService.getScriptByName(USER.getUsername(), USER.getUsername())).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -192,7 +199,8 @@ public class ScriptControllerIT {
     @Test
     public void updateScript_ReturnResponseIfValidRequest() throws Exception {
         ScriptRequest request = new ScriptRequest("Updated Script", "I am a Script");
-        Script scriptRes = new Script(1L, "Updated Script", "This is a test script", LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
+        Script scriptRes = new Script(1L, "Updated Script", "This is a test script", List.of(10, 10, 10).toString(),
+                LocalDate.parse("2024-01-23"), LocalDate.parse("2024-01-24"), USER);
         when(scriptService.updateScript(request, 1L, USER.getUsername())).thenReturn(scriptRes);
 
         mockMvc.perform(MockMvcRequestBuilders

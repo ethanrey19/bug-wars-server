@@ -2,6 +2,10 @@ package net.crusadergames.bugwars.service;
 
 import net.crusadergames.bugwars.dto.request.ScriptRequest;
 import net.crusadergames.bugwars.exceptions.*;
+import net.crusadergames.bugwars.exceptions.script.ScriptDoesNotBelongToUserException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNameAlreadyExistsException;
+import net.crusadergames.bugwars.exceptions.script.ScriptNotFoundException;
+import net.crusadergames.bugwars.exceptions.script.ScriptSaveException;
 import net.crusadergames.bugwars.model.Script;
 import net.crusadergames.bugwars.model.auth.User;
 import net.crusadergames.bugwars.repository.auth.UserRepository;
@@ -11,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +30,14 @@ public class ScriptServiceTest {
     private final User USER_NEW = new User(UUID.randomUUID(), "andrew", "gmail@email.com", "passing");
     private final User USER_FAKE = new User();
 
-    private final Script SCRIPT_1 = new Script(1L, "First Script", "I am a script", LocalDate.now(), LocalDate.now(), USER);
-    private final Script SCRIPT_2 = new Script(2L, "Second Script", "Eat chicken", LocalDate.now(), LocalDate.now(), USER_2);
-    private final Script SCRIPT_Old = new Script(1L, "Old Script", "Old Food!", LocalDate.now(), LocalDate.now(), USER_NEW);
-    private final Script SCRIPT_NEW = new Script(1L, "andrew", "Updated Script", LocalDate.now(), LocalDate.now(), USER_NEW);
+    private final Script SCRIPT_1 = new Script(1L, "First Script", "mov", List.of(10).toString(), LocalDate.now(), LocalDate.now(), USER);
+    private final Script SCRIPT_2 = new Script(2L, "Second Script", "Eat chicken", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_2);
+    private final Script SCRIPT_Old = new Script(1L, "Old Script", "Old Food!", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
+    private final Script SCRIPT_NEW = new Script(1L, "andrew", "Updated Script", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER_NEW);
 
 
     private ScriptService scriptService;
+    private ParserService parserService;
     private ScriptRepository scriptRepository;
     private UserRepository userRepository;
 
@@ -41,12 +45,13 @@ public class ScriptServiceTest {
     public void beforeEachTest() {
         userRepository = Mockito.mock(UserRepository.class);
         scriptRepository = Mockito.mock(ScriptRepository.class);
-        scriptService = new ScriptService(scriptRepository, userRepository);
+        parserService = new ParserService();
+        scriptService = new ScriptService(scriptRepository, userRepository, parserService);
     }
 
     @Test
     public void createScript_shouldReturnCreatedScript() {
-        ScriptRequest request = new ScriptRequest("First Script", "I am a Script");
+        ScriptRequest request = new ScriptRequest("First Script", "att");
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(USER));
         when(scriptRepository.findByName(any())).thenReturn(Optional.empty());
         when(userRepository.save(Mockito.any(User.class))).thenReturn(USER);
@@ -129,8 +134,8 @@ public class ScriptServiceTest {
 
     @Test
     void getAllScriptsByUser_shouldReturnListOfScriptsUnderAUser() {
-        Script script1 = new Script(1L, "Script 1", "Script 1", LocalDate.now(), LocalDate.now(), USER);
-        Script script2 = new Script(2L, "Script 2", "Script 2", LocalDate.now(), LocalDate.now(), USER);
+        Script script1 = new Script(1L, "Script 1", "Script 1", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER);
+        Script script2 = new Script(2L, "Script 2", "Script 2", List.of(10, 10, 10).toString(), LocalDate.now(), LocalDate.now(), USER);
 
         List<Script> expected = new ArrayList<>();
         expected.add(script1);
@@ -158,8 +163,8 @@ public class ScriptServiceTest {
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(USER));
         when(scriptRepository.findById(any())).thenReturn(Optional.of(SCRIPT_1));
 
-        ScriptRequest requestOld = new ScriptRequest("andrew", "Updated Script");
-        ScriptRequest requestNew = new ScriptRequest("First Script", "I am a script");
+        ScriptRequest requestOld = new ScriptRequest("andrew", "att\n att");
+        ScriptRequest requestNew = new ScriptRequest("First Script", "mov");
         scriptService.createScript(requestOld, USER.getUsername());
 
         Script script = scriptService.updateScript(requestNew, 1L, USER.getUsername());
@@ -175,7 +180,7 @@ public class ScriptServiceTest {
             when(scriptRepository.findById(any())).thenReturn(Optional.empty());
             when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(USER_2));
 
-            ScriptRequest requestNew = new ScriptRequest("andrew", "Updated Script");
+            ScriptRequest requestNew = new ScriptRequest("andrew", "att att att");
             scriptService.updateScript(requestNew, 1L, USER_2.getUsername());
         });
     }

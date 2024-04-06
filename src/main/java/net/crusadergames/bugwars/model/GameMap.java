@@ -35,7 +35,10 @@ public class GameMap {
     private String body;
 
     @NotBlank
+    @Column(name = "tiles", length = 10000)
+    private String tiles;
+
+    @NotBlank
     @Column(name = "image")
     private String imagePath;
-
 }

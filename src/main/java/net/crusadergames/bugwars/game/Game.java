@@ -80,7 +80,7 @@ public class Game {
         return gameEntities;
     }
 
-    public List<GameEntity> copyGameEntities(List<GameEntity> newEntities){
+    private List<GameEntity> copyGameEntities(List<GameEntity> newEntities){
         List<GameEntity> copyEntities = new ArrayList<>();
         for (GameEntity entity : newEntities) {
             copyEntities.add(new GameEntity(entity));
